@@ -493,7 +493,7 @@ OverlayDisplayManager.prototype._load_image = function (resource, callback) {
     this.image.odm = this;
     this.image.odm_callback = callback;
     this.image.onload = function () {
-        var $img = $("<img class=\"odm-element\" src=\""+this.src+"\" style=\"max-width: "+this.odm.max_width+"px; max-height: "+this.odm.max_height+"px;\"/>");
+        var $img = $("<img class=\"odm-element\" alt=\"\" src=\""+this.src+"\" style=\"max-width: "+this.odm.max_width+"px; max-height: "+this.odm.max_height+"px;\"/>");
         this.odm._display_element($img);
         this.odm_callback(true);
     };
