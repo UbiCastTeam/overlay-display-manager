@@ -81,10 +81,10 @@ OverlayDisplayManager.prototype._init = function () {
     html +=     "<div class=\"odm-layer\">";
     html +=         "<table class=\"odm-table\"><tr class=\"odm-table\"><td class=\"odm-table\">";
     html +=             "<div role=\"dialog\" aria-labelledby=\"odm_title_" + nb_odm_opened + "\" aria-modal=\"true\" class=\"odm-block\">";
+    html +=                 "<button type=\"button\" class=\"odm-close\"><i class=\"fa fa-close\"></i><span class=\"sr-only\">Close</span></button>";
     html +=                 "<div class=\"odm-top-bar\">";
     html +=                     "<div class=\"odm-resources\"></div>";
     html +=                     "<div id=\"odm_title_" + nb_odm_opened + "\" class=\"odm-title\"></div>";
-    html +=                 "<button type=\"button\" class=\"odm-close\"><i class=\"fa fa-close\"></i><span class=\"sr-only\">Close</span></button>";
     html +=                 "</div>";
     html +=                 "<div class=\"odm-element-place\">";
     html +=                     "<div class=\"odm-element-content\">";
@@ -304,7 +304,9 @@ OverlayDisplayManager.prototype._check_buttons_display = function (resource) {
             this.bottom_bar_displayed = true;
             this.on_resize();
         }
-        obj.focus_first_descendant($(".odm-element-content", obj.$widget)[0]);
+        if (!obj.focus_first_descendant($(".odm-element-content", obj.$widget)[0])) {
+            $(".odm-close", obj.$widget).focus();
+        }
     }
     else if (this.bottom_bar_displayed) {
         // hide bottom bar and clear buttons
@@ -395,7 +397,9 @@ OverlayDisplayManager.prototype.show = function (params) {
     var obj = this;
     this.$widget.addClass("odm-no-transition").stop(true, false).fadeIn(250, function () {
         $(this).removeClass("odm-no-transition");
-        obj.focus_first_descendant($(".odm-element-content", obj.$widget)[0]);
+        if (!obj.focus_first_descendant($(".odm-element-content", obj.$widget)[0])) {
+            $(".odm-close", obj.$widget).focus();
+        }
     });
 };
 OverlayDisplayManager.prototype.hide = function () {

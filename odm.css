@@ -66,6 +66,7 @@
     background: #222;
     border: none;
     border-bottom-left-radius: 4px;
+    z-index: 1;
 }
 .odm-main .odm-close i {
     color: white;
