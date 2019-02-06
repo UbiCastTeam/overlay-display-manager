@@ -73,14 +73,16 @@ OverlayDisplayManager.prototype._init = function () {
         this.no_fixed = true;
         extra_class = "no-fixed";
     }
+    var nb_odm_opened = $(".odm-main").length;
     var html = "";
     html += "<div class=\"odm-main "+extra_class+"\">";
     html +=     "<div class=\"odm-layer\">";
     html +=         "<table class=\"odm-table\"><tr class=\"odm-table\"><td class=\"odm-table\">";
-    html +=             "<div class=\"odm-block\">";
+    html +=             "<div role=\"dialog\" aria-labelledby=\"odm_title_" + nb_odm_opened + "\" aria-modal=\"true\" class=\"odm-block\">";
     html +=                 "<div class=\"odm-top-bar\">";
     html +=                     "<div class=\"odm-resources\"></div>";
-    html +=                     "<div class=\"odm-title\"></div>";
+    html +=                     "<div id=\"odm_title_" + nb_odm_opened + "\" class=\"odm-title\"></div>";
+    html +=                 "<button type=\"button\" class=\"odm-close\"><i class=\"fa fa-close\"></i><span class=\"sr-only\">Close</span></button>";
     html +=                 "</div>";
     html +=                 "<div class=\"odm-element-place\">";
     html +=                     "<div class=\"odm-element-content\">";
@@ -95,7 +97,6 @@ OverlayDisplayManager.prototype._init = function () {
     html +=                     "<div class=\"odm-btn-icon\">"+this.messages.previous+"</div></div></div>";
     html +=                 "<div class=\"odm-next\"><div class=\"odm-btn-bg\">";
     html +=                     "<div class=\"odm-btn-icon\">"+this.messages.next+"</div></div></div>";
-    html +=                 "<div class=\"odm-close\"><div></div></div>";
     html +=             "</div>";
     html +=         "</td></tr></table>";
     html +=     "</div>";
@@ -127,7 +128,25 @@ OverlayDisplayManager.prototype._init = function () {
     if (this.pending_show_params)
         this.show(this.pending_show_params);
 };
-
+OverlayDisplayManager.prototype.focus_first_descendant = function (element) {
+    for (var i = 0; i < element.childNodes.length; i++) {
+      var child = element.childNodes[i];
+      if (this.attempt_focus(child)) {
+          return true;
+      } else if (this.focus_first_descendant(child)) {
+          return true;
+      }
+    }
+    return false;
+};
+OverlayDisplayManager.prototype.attempt_focus = function (element) {
+    try {
+      element.focus();
+    }
+    catch (e) {
+    }
+    return (document.activeElement === element);
+};
 OverlayDisplayManager.prototype.set_language = function (lang) {
     if (lang == "fr") {
         this.language = "fr";
@@ -283,9 +302,7 @@ OverlayDisplayManager.prototype._check_buttons_display = function (resource) {
             this.bottom_bar_displayed = true;
             this.on_resize();
         }
-        // focus first button
-        if (this.displayed && !resource.no_button_focus)
-            this._focus_button();
+        obj.focus_first_descendant($(".odm-element-content", obj.$widget)[0]);
     }
     else if (this.bottom_bar_displayed) {
         // hide bottom bar and clear buttons
@@ -294,14 +311,6 @@ OverlayDisplayManager.prototype._check_buttons_display = function (resource) {
         $(".odm-buttons", this.$widget).html("");
         this.on_resize();
     }
-};
-
-OverlayDisplayManager.prototype._focus_button = function () {
-    if ($(".odm-bottom-bar button", this.$widget).length < 1)
-        return;
-    // focus first button (this can crash on IE)
-    try { $(".odm-bottom-bar button:first", this.$widget).focus(); }
-    catch (e) { }
 };
 
 OverlayDisplayManager.prototype._set_locked = function (locked) {
@@ -384,8 +393,7 @@ OverlayDisplayManager.prototype.show = function (params) {
     var obj = this;
     this.$widget.addClass("odm-no-transition").stop(true, false).fadeIn(250, function () {
         $(this).removeClass("odm-no-transition");
-        if (obj.current_resource && !obj.current_resource.no_button_focus)
-            obj._focus_button();
+        obj.focus_first_descendant($(".odm-element-content", obj.$widget)[0]);
     });
 };
 OverlayDisplayManager.prototype.hide = function () {

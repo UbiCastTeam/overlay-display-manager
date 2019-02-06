@@ -63,21 +63,19 @@
     right: 0;
     position: absolute;
     display: block;
-    background: #222 url("img/light.png") 0 0 repeat-x;
+    background: #222;
+    border: none;
     border-bottom-left-radius: 4px;
 }
-.odm-main .odm-close div {
-    width: 28px;
-    height: 28px;
-    display: block;
-    background: transparent url("img/close.png") 0 50% no-repeat;
-}
-.odm-main .odm-close:hover div {
-    background-position: 100% 50%;
+.odm-main .odm-close i {
+    color: white;
+    font-size: 1.2em;
+    padding: 5px;
 }
 .odm-main.odm-top-bar-displayed .odm-close {
     padding-top: 4px;
     padding-right: 4px;
+    color: black;
     background: transparent;
 }
 
