@@ -34,6 +34,7 @@ function OverlayDisplayManager(options) {
     this.current_resource = null;
     this.locked = false;
     this.no_fixed = false;
+    this.element_first_focused = null;
     
     if (window.utils && window.utils._current_lang)
         this.language = utils._current_lang;
@@ -68,6 +69,7 @@ function OverlayDisplayManager(options) {
 }
 
 OverlayDisplayManager.prototype._init = function () {
+    this.element_first_focused = document.activeElement;
     var extra_class = "";
     if (navigator.platform == "iPad" || navigator.platform == "iPhone" || navigator.platform == "iPod") {
         this.no_fixed = true;
@@ -406,6 +408,9 @@ OverlayDisplayManager.prototype.hide = function () {
     var obj = this;
     this.$widget.addClass("odm-no-transition").stop(true, false).fadeOut(250, function () {
         $(this).removeClass("odm-no-transition");
+        if (obj.element_first_focused) {
+            obj.element_first_focused.focus();
+        }
         obj._on_resource_hide();
     });
 };
