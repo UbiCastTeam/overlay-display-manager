@@ -33,7 +33,12 @@
                 odm.show({ title: "feegeg", html: "Sed efficitur ac enim at dictum. Sed hendrerit vulputate imperdiet. Quisque ultricies tortor eget felis molestie eleifend. Donec ut vulputate mauris. Nulla libero odio, condimentum ut efficitur ac, porta id lacus. Vivamus dictum tortor in ultrices vehicula. Integer sed tortor tincidunt, laoreet est eget, porta enim. Duis venenatis libero sit amet leo sodales sollicitudin." });
             });
             $("#odm_object").click(function () {
-                odm.show({ title: "object", html: $("#object") });
+                var $object = $("#object div");
+                odm.show({
+                    title: "object",
+                    html: $object,
+                    on_hide: function () { $("#object").append($object); }
+                });
             });
             $("#odm_iframe").click(function () {
                 odm.show({ title: "feegeg", iframe: "http://localhost/" });
@@ -121,6 +126,7 @@
     </ul>
     
     <div id="object">
+        <div>
 <p><b>Some text used to test object management</b></p>
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque nec aliquam tellus. Suspendisse potenti. Pellentesque pharetra lectus sed nisl egestas, sed laoreet mi vestibulum. In ullamcorper purus sed blandit laoreet. Suspendisse eleifend feugiat sodales. Quisque suscipit ultrices luctus. Mauris lacinia pulvinar metus. Sed odio massa, feugiat ac dolor sed, euismod porta eros. Duis sodales interdum nisl, non rhoncus orci tempus convallis. Ut vitae interdum eros, in lacinia enim.
 
@@ -132,6 +138,7 @@ Integer sodales vitae mauris at convallis. Nam elementum ac enim in pharetra. Se
 
 Sed commodo tellus nibh, eget varius ipsum malesuada eu. Etiam lobortis rhoncus sodales. Morbi malesuada, mauris at sollicitudin sollicitudin, velit lacus tempor elit, eu pretium tellus lacus eleifend est. Nulla facilisi. Ut vehicula dolor eu aliquam rutrum. Integer sed mauris sed dolor luctus convallis. Nullam id dui commodo, vestibulum odio sit amet, sagittis metus. In aliquam lacinia nisl, eget commodo neque egestas a. Nunc in ligula quis nisl tristique vehicula ac nec enim. Vivamus luctus, massa at tristique porttitor, sapien massa fringilla risus, a tempus elit eros ut augue. Mauris egestas augue eros, a eleifend eros varius in. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Cras malesuada ac urna at sollicitudin. Donec fermentum lectus in vestibulum efficitur. Vestibulum porttitor dictum dui id feugiat.</p>
 <p><button type="button">Test button for focus</button></p>
+        </div>
     </div>
 </body>
 </html>
