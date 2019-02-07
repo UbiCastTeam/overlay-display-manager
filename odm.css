@@ -16,7 +16,7 @@
 .odm-main {
     position: fixed;
     display: none;
-    background: transparent url("img/black_mask.png") 0 0 repeat;
+    background: rgba(0, 0, 0, 0.7);
     z-index: 50;
 }
 .odm-main.no-fixed {
@@ -50,8 +50,6 @@
     position: relative;
     border: 1px solid #666;
     background: #222;
-    background: -moz-linear-gradient(top, #333, #000);
-    background: -webkit-gradient(linear, left top, left bottom, from(#333), to(#000));
     overflow: hidden;
     z-index: 45;
     border-radius: 4px;
@@ -59,24 +57,31 @@
 
 /* close button */
 .odm-main .odm-close {
+    padding: 0;
     top: 0;
     right: 0;
     position: absolute;
     display: block;
-    background: #222;
+    background: #444;
     border: none;
     border-bottom-left-radius: 4px;
     z-index: 1;
 }
+.odm-main .odm-close:hover {
+    background: #666;
+}
 .odm-main .odm-close i {
+    padding: 5px 10px;
     color: white;
-    font-size: 1.2em;
-    padding: 5px;
+    font-size: 20px;
+    font-weight: bold;
+    font-style: normal;
+    font-family: Arial, sans-serif;
+    display: inline-block;
 }
 .odm-main.odm-top-bar-displayed .odm-close {
-    padding-top: 4px;
-    padding-right: 4px;
-    color: black;
+    padding-top: 1px;
+    padding-right: 1px;
     background: transparent;
 }
 
@@ -134,7 +139,7 @@
     position: absolute;
     display: none;
     border: 1px solid #666;
-    background: transparent url("img/black_mask.png") 0 0 repeat;
+    background: rgba(0, 0, 0, 0.7);
     border-radius: 6px;
 }
 .odm-main.odm-hover-loading-displayed .odm-hover-loading {
@@ -238,7 +243,7 @@
     top: 50%;
     position: absolute;
     border: 1px solid #666;
-    background: transparent url("img/black_mask.png") 0 0 repeat;
+    background: rgba(0, 0, 0, 0.7);
     display: none;
 }
 .odm-main .odm-previous .odm-btn-bg {
