@@ -82,7 +82,7 @@ OverlayDisplayManager.prototype._init = function () {
     html +=     "<div class=\"odm-layer\">";
     html +=         "<table class=\"odm-table\"><tr class=\"odm-table\"><td class=\"odm-table\">";
     html +=             "<div role=\"dialog\" aria-labelledby=\"odm_title_" + nb_odm_opened + "\" aria-modal=\"true\" class=\"odm-block\">";
-    html +=                 "<button type=\"button\" class=\"odm-close\" title=\""+this.messages.close+"\"><i aria-hidden=\"true\">X</i><span class=\"sr-only\" style=\"display: none;\">"+this.messages.close+"</span></button>";
+    html +=                 "<button type=\"button\" class=\"odm-close\" title=\""+this.messages.close+"\" aria-label=\""+this.messages.close+"\"><i aria-hidden=\"true\">X</i></button>";
     html +=                 "<div class=\"odm-top-bar\">";
     html +=                     "<div class=\"odm-resources\"></div>";
     html +=                     "<div id=\"odm_title_" + nb_odm_opened + "\" class=\"odm-title\"></div>";
@@ -176,7 +176,7 @@ OverlayDisplayManager.prototype.set_language = function (lang) {
     if (this.$widget) {
         // replace messages
         $(".odm-close", this.$widget).attr("title", this.messages.close);
-        $(".odm-close span", this.$widget).html(this.messages.close);
+        $(".odm-close", this.$widget).attr("aria-label", this.messages.close);
         $(".odm-loading", this.$widget).html(this.messages.loading);
         $(".odm-hover-loading", this.$widget).html(this.messages.loading);
         $(".odm-previous .odm-btn-icon", this.$widget).html(this.messages.previous);

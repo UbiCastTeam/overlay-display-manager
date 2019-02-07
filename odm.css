@@ -57,6 +57,7 @@
 
 /* close button */
 .odm-main .odm-close {
+    margin: 0;
     padding: 0;
     top: 0;
     right: 0;
@@ -64,6 +65,7 @@
     display: block;
     background: #444;
     border: none;
+    border-radius: 0;
     border-bottom-left-radius: 4px;
     z-index: 1;
 }
@@ -71,18 +73,15 @@
     background: #666;
 }
 .odm-main .odm-close i {
-    padding: 5px 10px;
+    padding: 0 10px;
     color: white;
+    height: 35px;
+    line-height: 35px;
     font-size: 20px;
     font-weight: bold;
     font-style: normal;
     font-family: Arial, sans-serif;
     display: inline-block;
-}
-.odm-main.odm-top-bar-displayed .odm-close {
-    padding-top: 1px;
-    padding-right: 1px;
-    background: transparent;
 }
 
 /* top-bar */
