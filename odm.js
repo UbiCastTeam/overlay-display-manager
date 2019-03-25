@@ -37,6 +37,8 @@ function OverlayDisplayManager(options) {
     this.locked = false;
     this.no_fixed = false;
     this.element_first_focused = null;
+    this.last_focus = null;
+    this.ignore_until_focus_changes = false;
 
     if (window.utils && window.utils._current_lang)
         this.language = window.utils._current_lang;
@@ -80,8 +82,8 @@ OverlayDisplayManager.prototype._init = function () {
     var html = "";
     html += "<div class=\"odm-main "+extra_class+"\">";
     html +=     "<div class=\"odm-layer\">";
-    html +=         "<table class=\"odm-table\"><tr class=\"odm-table\"><td class=\"odm-table\">";
-    html +=             "<div role=\"dialog\" aria-labelledby=\"odm_title_" + nb_odm_opened + "\" aria-modal=\"true\" class=\"odm-block\">";
+    html +=         "<table class=\"odm-table\" role=\"presentation\"><tr class=\"odm-table\"><td class=\"odm-table\">";
+    html +=             "<div role=\"dialog\" tabindex=\"-1\" aria-labelledby=\"odm_title_" + nb_odm_opened + "\" aria-modal=\"true\" class=\"odm-block\">";
     html +=                 "<button type=\"button\" class=\"odm-close\" title=\""+this.messages.close+"\" aria-label=\""+this.messages.close+"\"><i aria-hidden=\"true\">X</i></button>";
     html +=                 "<div class=\"odm-top-bar\">";
     html +=                     "<div class=\"odm-resources\"></div>";
@@ -103,7 +105,7 @@ OverlayDisplayManager.prototype._init = function () {
     html +=             "</div>";
     html +=         "</td></tr></table>";
     html +=     "</div>";
-    html +=     "<div class=\"odm-closer\"></div>";
+    html +=     "<div class=\"odm-closer\" tabindex=\"0\"></div>";
     html += "</div>";
     this.$widget = $(html);
     $("body").append(this.$widget);
@@ -131,6 +133,30 @@ OverlayDisplayManager.prototype._init = function () {
     if (this.pending_show_params)
         this.show(this.pending_show_params);
 };
+OverlayDisplayManager.prototype.trap_focus = function (event) {
+    if (this.ignore_until_focus_changes) {
+      return;
+    }
+    if ($(".odm-element-content", this.$widget)[0].contains(event.target)) {
+      this.last_focus = event.target;
+    } else {
+      this.focus_first_descendant($(".odm-element-content", this.$widget)[0]);
+      if (this.last_focus == document.activeElement) {
+        this.focus_last_descendant($(".odm-element-content", this.$widget)[0]);
+      }
+      this.last_focus = document.activeElement;
+    }
+};
+OverlayDisplayManager.prototype.focus_last_descendant = function (element) {
+    for (var i = element.childNodes.length - 1; i >= 0; i--) {
+      var child = element.childNodes[i];
+      if (this.attempt_focus(child) ||
+          this.focus_last_descendant(child)) {
+        return true;
+      }
+    }
+    return false;
+};
 OverlayDisplayManager.prototype.focus_first_descendant = function (element) {
     for (var i = 0; i < element.childNodes.length; i++) {
         var child = element.childNodes[i];
@@ -143,11 +169,16 @@ OverlayDisplayManager.prototype.focus_first_descendant = function (element) {
     return false;
 };
 OverlayDisplayManager.prototype.attempt_focus = function (element) {
+    if (this.ignore_until_focus_changes) {
+      return;
+    }
+    this.ignore_until_focus_changes = true;
     try {
         element.focus();
     }
     catch (e) {
     }
+    this.ignore_until_focus_changes = false;
     return (document.activeElement === element);
 };
 OverlayDisplayManager.prototype.set_language = function (lang) {
@@ -404,6 +435,8 @@ OverlayDisplayManager.prototype.show = function (params) {
     var obj = this;
     this.$widget.addClass("odm-no-transition").stop(true, false).fadeIn(250, function () {
         $(this).removeClass("odm-no-transition");
+        obj.last_focus = document.activeElement;
+        document.addEventListener("focus", obj.trap_focus.bind(obj), true);
         if (!obj.focus_first_descendant($(".odm-element-content", obj.$widget)[0])) {
             // if no focusable element is in content, try to focus any button in the top block
             obj.focus_first_descendant($(".odm-block", obj.$widget)[0]);
@@ -420,9 +453,12 @@ OverlayDisplayManager.prototype.hide = function () {
     var obj = this;
     this.$widget.addClass("odm-no-transition").stop(true, false).fadeOut(250, function () {
         $(this).removeClass("odm-no-transition");
-        if (obj.element_first_focused)
+        if (obj.element_first_focused) {
             obj.attempt_focus(obj.element_first_focused);
+        }
         obj._on_resource_hide();
+        document.removeEventListener("focus", obj.trap_focus);
+        obj.last_focus = document.activeElement;
     });
 };
 
