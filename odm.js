@@ -59,13 +59,17 @@ function OverlayDisplayManager(options) {
             return;
         switch (event.keyCode) {
             case 27:
-                if (!obj.locked && obj.hide_on_escape)
+                if (!obj.locked && obj.hide_on_escape) {
+                    event.stopImmediatePropagation();
                     obj.hide();
+                }
                 break;
             case 37:
+                event.stopImmediatePropagation();
                 obj.previous();
                 break;
             case 39:
+                event.stopImmediatePropagation();
                 obj.next();
                 break;
         }
