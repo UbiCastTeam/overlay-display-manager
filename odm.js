@@ -54,26 +54,6 @@ function OverlayDisplayManager(options) {
     $(window).resize(function () {
         obj.on_resize();
     });
-    $(document).keydown(function (event) {
-        if (!obj.displayed)
-            return;
-        switch (event.keyCode) {
-            case 27:
-                if (!obj.locked && obj.hide_on_escape) {
-                    event.stopImmediatePropagation();
-                    obj.hide();
-                }
-                break;
-            case 37:
-                event.stopImmediatePropagation();
-                obj.previous();
-                break;
-            case 39:
-                event.stopImmediatePropagation();
-                obj.next();
-                break;
-        }
-    });
 }
 
 OverlayDisplayManager.prototype._init = function () {
@@ -132,6 +112,26 @@ OverlayDisplayManager.prototype._init = function () {
     $(".odm-element-content", this.$widget).click({ obj: this }, function (event) {
         if (!event.data.obj.locked && event.data.obj.display_mode == "image" && event.data.obj.resources.length < 2 && event.data.obj.image && !event.data.obj.image.loading_failed)
             event.data.obj.hide();
+    });
+    this.$widget.keydown({ obj: this }, function (event) {
+        if (!event.data.obj.displayed)
+            return;
+        switch (event.keyCode) {
+            case 27:
+                if (!event.data.obj.locked && event.data.obj.hide_on_escape) {
+                    event.stopImmediatePropagation();
+                    event.data.obj.hide();
+                }
+                break;
+            case 37:
+                event.stopImmediatePropagation();
+                event.data.obj.previous();
+                break;
+            case 39:
+                event.stopImmediatePropagation();
+                event.data.obj.next();
+                break;
+        }
     });
     this.on_resize();
     if (this.pending_show_params)
@@ -440,7 +440,7 @@ OverlayDisplayManager.prototype.show = function (params) {
     this.$widget.addClass("odm-no-transition").stop(true, false).fadeIn(250, function () {
         $(this).removeClass("odm-no-transition");
         obj.last_focus = document.activeElement;
-        document.addEventListener("focus", obj.trap_focus.bind(obj), true);
+        obj.$widget[0].addEventListener("focus", obj.trap_focus.bind(obj), true);
         if (!obj.focus_first_descendant($(".odm-element-content", obj.$widget)[0])) {
             // if no focusable element is in content, try to focus any button in the top block
             obj.focus_first_descendant($(".odm-block", obj.$widget)[0]);
@@ -461,7 +461,7 @@ OverlayDisplayManager.prototype.hide = function () {
             obj.attempt_focus(obj.element_first_focused);
         }
         obj._on_resource_hide();
-        document.removeEventListener("focus", obj.trap_focus);
+        obj.$widget[0].removeEventListener("focus", obj.trap_focus);
         obj.last_focus = document.activeElement;
     });
 };
