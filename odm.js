@@ -65,7 +65,7 @@ OverlayDisplayManager.prototype._init = function () {
     var nb_odm_opened = $(".odm-main").length;
     var html = "";
     html += "<div class=\"odm-main "+extra_class+"\">";
-    html +=     "<div class=\"odm-layer\">";
+    html +=     "<div class=\"odm-layer\" tabindex=\"0\">";
     html +=         "<table class=\"odm-table\" role=\"presentation\"><tr class=\"odm-table\"><td class=\"odm-table\">";
     html +=             "<div role=\"dialog\" tabindex=\"-1\" aria-labelledby=\"odm_title_" + nb_odm_opened + "\" aria-modal=\"true\" class=\"odm-block\">";
     html +=                 "<button type=\"button\" class=\"odm-close\" title=\""+this.messages.close+"\" aria-label=\""+this.messages.close+"\"><i aria-hidden=\"true\">X</i></button>";
@@ -141,12 +141,12 @@ OverlayDisplayManager.prototype.trap_focus = function (event) {
     if (this.ignore_until_focus_changes) {
       return;
     }
-    if ($(".odm-element-content", this.$widget)[0].contains(event.target)) {
+    if ($(".odm-block", this.$widget)[0].contains(event.target)) {
       this.last_focus = event.target;
     } else {
-      this.focus_first_descendant($(".odm-element-content", this.$widget)[0]);
+      this.focus_first_descendant($(".odm-block", this.$widget)[0]);
       if (this.last_focus == document.activeElement) {
-        this.focus_last_descendant($(".odm-element-content", this.$widget)[0]);
+        this.focus_last_descendant($(".odm-block", this.$widget)[0]);
       }
       this.last_focus = document.activeElement;
     }
@@ -164,18 +164,18 @@ OverlayDisplayManager.prototype.focus_last_descendant = function (element) {
 OverlayDisplayManager.prototype.focus_first_descendant = function (element) {
     for (var i = 0; i < element.childNodes.length; i++) {
         var child = element.childNodes[i];
-        if (this.attempt_focus(child)) {
-            return true;
-        } else if (this.focus_first_descendant(child)) {
+        if (this.attempt_focus(child) ||
+            this.focus_first_descendant(child)) {
             return true;
         }
     }
     return false;
 };
 OverlayDisplayManager.prototype.attempt_focus = function (element) {
-    if (this.ignore_until_focus_changes) {
-      return;
+    if (!this.is_focusable(element)) {
+        return false;
     }
+
     this.ignore_until_focus_changes = true;
     try {
         element.focus();
@@ -185,6 +185,31 @@ OverlayDisplayManager.prototype.attempt_focus = function (element) {
     this.ignore_until_focus_changes = false;
     return (document.activeElement === element);
 };
+
+
+OverlayDisplayManager.prototype.is_focusable = function (element) {
+  if (element.tabIndex > 0 || (element.tabIndex === 0 && element.getAttribute('tabIndex') !== null)) {
+    return true;
+  }
+
+  if (element.disabled) {
+    return false;
+  }
+
+  switch (element.nodeName) {
+    case 'A':
+      return !!element.href && element.rel != 'ignore';
+    case 'INPUT':
+      return element.type != 'hidden' && element.type != 'file';
+    case 'BUTTON':
+    case 'SELECT':
+    case 'TEXTAREA':
+      return true;
+    default:
+      return false;
+  }
+};
+
 OverlayDisplayManager.prototype.set_language = function (lang) {
     if (lang == "fr") {
         this.language = "fr";
@@ -461,7 +486,7 @@ OverlayDisplayManager.prototype.hide = function () {
             obj.attempt_focus(obj.element_first_focused);
         }
         obj._on_resource_hide();
-        obj.$widget[0].removeEventListener("focus", obj.trap_focus);
+        obj.$widget[0].removeEventListener("focus", obj.trap_focus, true);
         obj.last_focus = document.activeElement;
     });
 };
