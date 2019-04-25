@@ -85,6 +85,10 @@
 }
 
 /* top-bar */
+.odm-main .odm-top-bar .odm-title {
+    font-size: 1em;
+    padding: 0;
+}
 .odm-main .odm-top-bar {
     padding-bottom: 5px;
     padding-right: 35px;
