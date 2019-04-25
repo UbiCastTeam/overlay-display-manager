@@ -71,7 +71,7 @@ OverlayDisplayManager.prototype._init = function () {
     html +=                 "<button type=\"button\" class=\"odm-close\" title=\""+this.messages.close+"\" aria-label=\""+this.messages.close+"\"><i aria-hidden=\"true\">X</i></button>";
     html +=                 "<div class=\"odm-top-bar\">";
     html +=                     "<div class=\"odm-resources\"></div>";
-    html +=                     "<div id=\"odm_title_" + nb_odm_opened + "\" class=\"odm-title\"></div>";
+    html +=                     "<h1 id=\"odm_title_" + nb_odm_opened + "\" class=\"odm-title\"></h1>";
     html +=                 "</div>";
     html +=                 "<div class=\"odm-element-place\">";
     html +=                     "<div class=\"odm-element-content\">";
