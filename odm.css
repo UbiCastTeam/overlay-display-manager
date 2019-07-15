@@ -77,7 +77,7 @@
     color: white;
     height: 35px;
     line-height: 35px;
-    font-size: 20px;
+    font-size: 1.3em;
     font-weight: bold;
     font-style: normal;
     font-family: Arial, sans-serif;
@@ -88,6 +88,7 @@
 .odm-main .odm-top-bar .odm-title {
     font-size: 1em;
     padding: 0;
+    margin: 4px;
 }
 .odm-main .odm-top-bar {
     padding-bottom: 5px;
@@ -95,7 +96,7 @@
     color: #ddd;
     height: 25px;
     line-height: 25px;
-    font-size: 16px;
+    font-size: 1em;
     font-weight: bold;
     text-align: left;
     display: none;
@@ -115,7 +116,7 @@
     color: #ddd;
     height: 35px;
     line-height: 35px;
-    font-size: 16px;
+    font-size: 1em;
     font-weight: bold;
     text-align: right;
     display: none;
@@ -153,7 +154,7 @@
     padding-left: 52px;
     line-height: 32px;
     color: #ccc;
-    font-size: 13px;
+    font-size: 0.9em;
     font-weight: bold;
     background: transparent url("img/loading_small.gif") 8px 50% no-repeat;
 }
@@ -202,7 +203,7 @@
     background: transparent;
     color: #ccc;
     font-weight: bold;
-    font-size: 20px;
+    font-size: 1.3em;
     transition: none;
 }
 .odm-main div.odm-element.odm-error {
@@ -271,7 +272,7 @@
 .odm-main .odm-next .odm-btn-icon {
     padding-top: 74px;
     color: #ccc;
-    font-size: 14px;
+    font-size: 0.9em;
     text-align: center;
 }
 .odm-main .odm-previous:hover .odm-btn-bg,
