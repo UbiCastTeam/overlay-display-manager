@@ -45,14 +45,14 @@
 }
 .odm-main .odm-block {
     margin: 0;
-    padding: 5px;
+    padding: 0.25em;
     display: block;
     position: relative;
     border: 1px solid #666;
     background: #222;
     overflow: hidden;
     z-index: 45;
-    border-radius: 4px;
+    border-radius: 0.25em;
 }
 
 /* close button */
@@ -66,18 +66,17 @@
     background: #444;
     border: none;
     border-radius: 0;
-    border-bottom-left-radius: 4px;
+    border-bottom-left-radius: 0.25em;
     z-index: 1;
 }
 .odm-main .odm-close:hover {
     background: #666;
 }
 .odm-main .odm-close i {
-    padding: 0 10px;
+    padding: 0 0.3em;
     color: white;
-    height: 35px;
-    line-height: 35px;
-    font-size: 1.3em;
+    line-height: 1.2em;
+    font-size: 2em;
     font-weight: bold;
     font-style: normal;
     font-family: Arial, sans-serif;
@@ -86,17 +85,18 @@
 
 /* top-bar */
 .odm-main .odm-top-bar .odm-title {
-    font-size: 1em;
     padding: 0;
-    margin: 4px;
+    margin: 0;
+    font-size: 1em;
 }
 .odm-main .odm-top-bar {
-    padding-bottom: 5px;
-    padding-right: 35px;
+    padding-bottom: 0.25em;
+    padding-left: 0.25em;
+    padding-right: 2em;
     color: #ddd;
-    height: 25px;
-    line-height: 25px;
-    font-size: 1em;
+    height: 1.5em;
+    line-height: 1.5em;
+    font-size: 1.1em;
     font-weight: bold;
     text-align: left;
     display: none;
@@ -105,17 +105,17 @@
     display: block;
 }
 .odm-main .odm-top-bar .odm-resources {
-    margin-left: 5px;
+    margin-left: 0.25em;
     float: right;
     display: block;
 }
 /* bottom-bar */
 .odm-main .odm-bottom-bar {
-    padding: 0 2px;
-    padding-top: 5px;
+    padding: 0.25em;
+    padding-bottom: 0;
     color: #ddd;
-    height: 35px;
-    line-height: 35px;
+    height: 1.5em;
+    line-height: 1.5em;
     font-size: 1em;
     font-weight: bold;
     text-align: right;
@@ -125,7 +125,7 @@
     vertical-align: middle;
 }
 .odm-main .odm-bottom-bar button + button {
-    margin-left: 8px;
+    margin-left: 0.5em;
 }
 .odm-main.odm-bottom-bar-displayed .odm-bottom-bar {
     display: block;
@@ -135,7 +135,7 @@
 .odm-main .odm-element-place {
     position: relative;
     overflow: hidden;
-    border-radius: 3px;
+    border-radius: 0.2em;
 }
 .odm-main .odm-hover-loading {
     top: 20px;
@@ -144,7 +144,7 @@
     display: none;
     border: 1px solid #666;
     background: rgba(0, 0, 0, 0.7);
-    border-radius: 6px;
+    border-radius: 0.35em;
 }
 .odm-main.odm-hover-loading-displayed .odm-hover-loading {
     display: block;
@@ -185,7 +185,7 @@
 }
 .odm-main div.odm-element,
 .odm-main form.odm-element {
-    padding: 10px;
+    padding: 0.5em;
 }
 .odm-main div.odm-element,
 .odm-main form.odm-element,
@@ -222,10 +222,10 @@
 /* previous and next buttons */
 .odm-main .odm-previous,
 .odm-main .odm-next {
-    top: 5px;
-    bottom: 5px;
-    left: 5px;
-    right: 5px;
+    top: 0.25em;
+    bottom: 0.25em;
+    left: 0.25em;
+    right: 0.25em;
     position: absolute;
     width: 181px;
     display: none;
@@ -259,14 +259,14 @@
 .odm-main .odm-previous .odm-btn-bg {
     right: 60px;
     border-left: 0 none;
-    border-top-right-radius: 6px;
-    border-bottom-right-radius: 6px;
+    border-top-right-radius: 0.35em;
+    border-bottom-right-radius: 0.35em;
 }
 .odm-main .odm-next .odm-btn-bg {
     left: 60px;
     border-right: 0 none;
-    border-top-left-radius: 6px;
-    border-bottom-left-radius: 6px;
+    border-top-left-radius: 0.35em;
+    border-bottom-left-radius: 0.35em;
 }
 .odm-main .odm-previous .odm-btn-icon,
 .odm-main .odm-next .odm-btn-icon {

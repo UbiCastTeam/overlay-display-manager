@@ -5,7 +5,6 @@
 * https://creativecommons.org/licenses/by-sa/3.0/ *
 * Requires: jQuery                                *
 **************************************************/
-"use strict";
 
 
 function OverlayDisplayManager(options) {
@@ -13,8 +12,8 @@ function OverlayDisplayManager(options) {
     this.language = "en";
     this.margin = 30;
     this.element_padding = 20;
-    this.top_bar_height = 30;
-    this.bottom_bar_height = 40;
+    this.top_bar_height = 35;
+    this.bottom_bar_height = 45;
     this.default_buttons_class = "";
     this.hide_on_escape = true;
 
@@ -139,25 +138,25 @@ OverlayDisplayManager.prototype._init = function () {
 };
 OverlayDisplayManager.prototype.trap_focus = function (event) {
     if (this.ignore_until_focus_changes) {
-      return;
+        return;
     }
     if ($(".odm-block", this.$widget)[0].contains(event.target)) {
-      this.last_focus = event.target;
+        this.last_focus = event.target;
     } else {
-      this.focus_first_descendant($(".odm-block", this.$widget)[0]);
-      if (this.last_focus == document.activeElement) {
-        this.focus_last_descendant($(".odm-block", this.$widget)[0]);
-      }
-      this.last_focus = document.activeElement;
+        this.focus_first_descendant($(".odm-block", this.$widget)[0]);
+        if (this.last_focus == document.activeElement) {
+            this.focus_last_descendant($(".odm-block", this.$widget)[0]);
+        }
+        this.last_focus = document.activeElement;
     }
 };
 OverlayDisplayManager.prototype.focus_last_descendant = function (element) {
     for (var i = element.childNodes.length - 1; i >= 0; i--) {
-      var child = element.childNodes[i];
-      if (this.attempt_focus(child) ||
-          this.focus_last_descendant(child)) {
+        var child = element.childNodes[i];
+        if (this.attempt_focus(child) ||
+            this.focus_last_descendant(child)) {
         return true;
-      }
+        }
     }
     return false;
 };
@@ -179,8 +178,7 @@ OverlayDisplayManager.prototype.attempt_focus = function (element) {
     this.ignore_until_focus_changes = true;
     try {
         element.focus();
-    }
-    catch (e) {
+    } catch (e) {
     }
     this.ignore_until_focus_changes = false;
     return (document.activeElement === element);
@@ -188,26 +186,26 @@ OverlayDisplayManager.prototype.attempt_focus = function (element) {
 
 
 OverlayDisplayManager.prototype.is_focusable = function (element) {
-  if (element.tabIndex > 0 || (element.tabIndex === 0 && element.getAttribute('tabIndex') !== null)) {
-    return true;
-  }
+    if (element.tabIndex > 0 || (element.tabIndex === 0 && element.getAttribute('tabIndex') !== null)) {
+        return true;
+    }
 
-  if (element.disabled) {
-    return false;
-  }
+    if (element.disabled) {
+        return false;
+    }
 
-  switch (element.nodeName) {
-    case 'A':
-      return !!element.href && element.rel != 'ignore';
-    case 'INPUT':
-      return element.type != 'hidden' && element.type != 'file';
-    case 'BUTTON':
-    case 'SELECT':
-    case 'TEXTAREA':
-      return true;
-    default:
-      return false;
-  }
+    switch (element.nodeName) {
+        case 'A':
+            return !!element.href && element.rel != 'ignore';
+        case 'INPUT':
+            return element.type != 'hidden' && element.type != 'file';
+        case 'BUTTON':
+        case 'SELECT':
+        case 'TEXTAREA':
+            return true;
+        default:
+            return false;
+    }
 };
 
 OverlayDisplayManager.prototype.set_language = function (lang) {
@@ -617,4 +615,3 @@ OverlayDisplayManager.prototype._load_html = function (resource, callback) {
     this._display_element($html, true);
     callback(true);
 };
-
