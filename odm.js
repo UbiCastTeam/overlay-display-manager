@@ -10,12 +10,13 @@
 function OverlayDisplayManager(options) {
     // params
     this.language = "en";
-    this.margin = 30;
-    this.element_padding = 20;
-    this.top_bar_height = 35;
-    this.bottom_bar_height = 45;
     this.default_buttons_class = "";
     this.hide_on_escape = true;
+    // size are in em unit
+    this.margin = 2;
+    this.element_padding = 1;
+    this.top_bar_height = 1.75;
+    this.bottom_bar_height = 2;
 
     // vars
     this.pending_show_params = null;
@@ -243,13 +244,22 @@ OverlayDisplayManager.prototype.set_language = function (lang) {
 };
 
 OverlayDisplayManager.prototype.on_resize = function () {
-    this.max_width = $(window).width() - this.margin;
-    this.max_height = $(window).height() - this.margin;
+    var em_factor;
+    try {
+        // get number of px of one em
+        em_factor = parseFloat(getComputedStyle(document.body).fontSize);
+    } catch (e) {
+        em_factor = 15;
+    }
+    var width_used = this.margin;
+    var height_used = this.margin;
     if (this.top_bar_displayed)
-        this.max_height -= this.top_bar_height;
+        height_used += this.top_bar_height;
     if (this.bottom_bar_displayed)
-        this.max_height -= this.bottom_bar_height;
-    var padding = this.element_padding_displayed ? this.element_padding : 0;
+        height_used += this.bottom_bar_height;
+    this.max_width = $(window).width() - (width_used * em_factor);
+    this.max_height = $(window).height() - (height_used * em_factor);
+    var padding = this.element_padding_displayed ? this.element_padding * em_factor : 0;
     if (this.max_width > 0)
         $(".odm-element", this.$widget).css("max-width", (this.max_width-padding)+"px");
     if (this.max_height > 0)
