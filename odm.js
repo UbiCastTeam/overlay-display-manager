@@ -247,7 +247,7 @@ OverlayDisplayManager.prototype.on_resize = function () {
     var em_factor;
     try {
         // get number of px of one em
-        em_factor = parseFloat(getComputedStyle(document.body).fontSize);
+        em_factor = parseFloat(getComputedStyle($(".odm-element", this.$widget)[0]).fontSize);
     } catch (e) {
         em_factor = 15;
     }

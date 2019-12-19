@@ -67,6 +67,7 @@
     border: none;
     border-radius: 0;
     border-bottom-left-radius: 0.25em;
+    font-size: inherit;
     z-index: 1;
 }
 .odm-main .odm-close:hover {
@@ -76,7 +77,7 @@
     padding: 0 0.3em;
     color: white;
     line-height: 1.2em;
-    font-size: 2em;
+    font-size: 1.8em;
     font-weight: bold;
     font-style: normal;
     font-family: Arial, sans-serif;
@@ -92,7 +93,7 @@
 .odm-main .odm-top-bar {
     padding-bottom: 0.25em;
     padding-left: 0.25em;
-    padding-right: 2em;
+    padding-right: 2.25em;
     color: #ddd;
     height: 1.5em;
     line-height: 1.5em;
@@ -113,15 +114,12 @@
 .odm-main .odm-bottom-bar {
     padding-top: 0.25em;
     color: #ddd;
-    height: 1.5em;
-    line-height: 1.5em;
-    font-size: 1em;
-    font-weight: bold;
     text-align: right;
     display: none;
 }
 .odm-main .odm-bottom-bar button {
     vertical-align: middle;
+    font-size: inherit;
 }
 .odm-main .odm-bottom-bar button + button {
     margin-left: 0.5em;
