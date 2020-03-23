@@ -39,6 +39,7 @@ function OverlayDisplayManager(options) {
     this.element_first_focused = null;
     this.last_focus = null;
     this.ignore_until_focus_changes = false;
+    this.id = 1;
 
     if (window.utils && window.utils._current_lang)
         this.language = window.utils._current_lang;
@@ -57,6 +58,10 @@ function OverlayDisplayManager(options) {
 }
 
 OverlayDisplayManager.prototype._init = function () {
+    if (window.odm_id_count) {
+        this.id = window.odm_id_count + 1;
+    }
+    window.odm_id_count += 1;
     var extra_class = "";
     if (navigator.platform == "iPad" || navigator.platform == "iPhone" || navigator.platform == "iPod") {
         this.no_fixed = true;
@@ -64,7 +69,7 @@ OverlayDisplayManager.prototype._init = function () {
     }
     var nb_odm_opened = $(".odm-main").length;
     var html = "";
-    html += "<div class=\"odm-main "+extra_class+"\">";
+    html += "<div id=\"odm_" + this.id + "\" class=\"odm-main "+extra_class+"\">";
     html +=     "<div class=\"odm-layer\" tabindex=\"0\">";
     html +=         "<table class=\"odm-table\" role=\"presentation\"><tr class=\"odm-table\"><td class=\"odm-table\">";
     html +=             "<div role=\"dialog\" tabindex=\"-1\" aria-labelledby=\"odm_title_" + nb_odm_opened + "\" aria-modal=\"true\" class=\"odm-block\">";
