@@ -70,6 +70,13 @@
             $("#odm_in_sub_div_place").click(function () {
                 odm_in_sub_div.show("1.jpg");
             });
+            $("#odm_in_sub_div_place_with_iframe").click(function () {
+                odm_in_sub_div.show({
+                    title: "Iframe + buttons",
+                    iframe: "http://localhost/",
+                    buttons: [{ label: "test", callback: function () { alert("test"); } }]
+                });
+            });
             
             $(window).keypress(function (event) {
                 var key = event.keyCode || event.which;
@@ -126,6 +133,7 @@
         <button type="button" id="odm_locked">Locked (only closable by callback)</button>
         <button type="button" id="odm_show">Show</button>
         <button type="button" id="odm_in_sub_div_place">Show in sub element</button>
+        <button type="button" id="odm_in_sub_div_place_with_iframe">Show iframe in sub element</button>
         <select id="odm_lang">
             <option value="en">Language: en</option>
             <option value="fr">Language: fr</option>

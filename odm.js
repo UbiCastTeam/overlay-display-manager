@@ -263,8 +263,13 @@ OverlayDisplayManager.prototype.on_resize = function () {
         height_used += this.top_bar_height;
     if (this.bottom_bar_displayed)
         height_used += this.bottom_bar_height;
-    this.max_width = $(window).width() - (width_used * em_factor);
-    this.max_height = $(window).height() - (height_used * em_factor);
+    if (this.overlay_selector_place) {
+        this.max_width = $(this.overlay_selector_place).width() - (width_used * em_factor);
+        this.max_height = $(this.overlay_selector_place).height() - (height_used * em_factor);
+    } else {
+        this.max_width = $(window).width() - (width_used * em_factor);
+        this.max_height = $(window).height() - (height_used * em_factor);
+    }
     var padding = this.element_padding_displayed ? this.element_padding * em_factor : 0;
     if (this.max_width > 0)
         $(".odm-element", this.$widget).css("max-width", (this.max_width-padding)+"px");
