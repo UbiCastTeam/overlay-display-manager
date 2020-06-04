@@ -10,6 +10,7 @@
     <script type="text/javascript" src="../odm.js"></script>
     <script type="text/javascript">
         var odm = new OverlayDisplayManager();
+        var odm_in_sub_div = new OverlayDisplayManager({"overlay_selector_place": "#object"});
         $(document).ready(function () {
             $("#odm_img").click(function () {
                 odm.show("1.jpg");
@@ -66,6 +67,9 @@
                 odm.set_language($(this).val());
             });
             $("#odm_lang").change();
+            $("#odm_in_sub_div_place").click(function () {
+                odm_in_sub_div.show("1.jpg");
+            });
             
             $(window).keypress(function (event) {
                 var key = event.keyCode || event.which;
@@ -101,6 +105,9 @@
         :focus {
             outline: 2px dotted rgba(255, 0, 0, 0.8);
         }
+        #object {
+            position: relative;
+        }
     </style>
 </head>
 
@@ -118,6 +125,7 @@
         <button type="button" id="odm_iframe_buttons">Iframe content with buttons</button>
         <button type="button" id="odm_locked">Locked (only closable by callback)</button>
         <button type="button" id="odm_show">Show</button>
+        <button type="button" id="odm_in_sub_div_place">Show in sub element</button>
         <select id="odm_lang">
             <option value="en">Language: en</option>
             <option value="fr">Language: fr</option>
