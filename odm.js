@@ -64,7 +64,7 @@ OverlayDisplayManager.prototype._init = function () {
     }
     window.odm_id_count += 1;
     var extra_class = "";
-    if (this.overlay_selector_place || navigator.platform == "iPad" || navigator.platform == "iPhone" || navigator.platform == "iPod") {
+    if (this.overlay_selector_place != "body" || navigator.platform == "iPad" || navigator.platform == "iPhone" || navigator.platform == "iPod") {
         this.no_fixed = true;
         extra_class = "no-fixed";
     }
@@ -263,7 +263,7 @@ OverlayDisplayManager.prototype.on_resize = function () {
         height_used += this.top_bar_height;
     if (this.bottom_bar_displayed)
         height_used += this.bottom_bar_height;
-    if (this.overlay_selector_place) {
+    if (this.overlay_selector_place != "body") {
         this.max_width = $(this.overlay_selector_place).width() - (width_used * em_factor);
         this.max_height = $(this.overlay_selector_place).height() - (height_used * em_factor);
     } else {
