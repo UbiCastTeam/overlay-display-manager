@@ -3,196 +3,204 @@
 * Author: Stephane Diemer                         *
 * License: CC by SA v3                            *
 * https://creativecommons.org/licenses/by-sa/3.0/ *
-* Requires: jQuery                                *
 **************************************************/
 
 
-function OverlayDisplayManager(options) {
+function OverlayDisplayManager (options) {
     // params
-    this.language = "en";
-    this.default_buttons_class = "";
-    this.hide_on_escape = true;
+    this.language = 'en';
+    this.defaultButtonsClass = '';
+    this.hideOnEscape = true;
     // size are in em unit
     this.margin = 2;
-    this.element_padding = 1;
-    this.top_bar_height = 1.75;
-    this.bottom_bar_height = 2;
+    this.elementPadding = 1;
+    this.topBarHeight = 1.75;
+    this.bottomBarHeight = 2;
 
     // vars
-    this.overlay_selector_place = "body";
-    this.pending_show_params = null;
+    this.overlaySelectorPlace = 'body';
+    this.pendingShowParams = null;
     this.messages = {};
-    this.$widget = null;
-    this.max_width = 0;
-    this.max_height = 0;
+    this.widget = null;
+    this.maxWidth = 0;
+    this.maxHeight = 0;
     this.image = null;
     this.displayed = false;
-    this.element_padding_displayed = false;
-    this.top_bar_displayed = false;
-    this.bottom_bar_displayed = false;
-    this.display_mode = null;
-    this.title = "";
+    this.displayedElement = null;
+    this.elementPaddingDisplayed = false;
+    this.topBarDisplayed = false;
+    this.bottomBarDisplayed = false;
+    this.displayMode = null;
+    this.title = '';
     this.resources = [];
-    this.current_index = 0;
-    this.current_resource = null;
+    this.currentIndex = 0;
+    this.currentResource = null;
     this.locked = false;
-    this.no_fixed = false;
-    this.element_first_focused = null;
-    this.last_focus = null;
-    this.ignore_until_focus_changes = false;
+    this.noFixed = false;
+    this.elementFirstFocused = null;
+    this.lastFocus = null;
+    this.ignoreUntilFocusChanges = false;
     this.id = 1;
 
-    if (window.utils && window.utils._current_lang)
-        this.language = window.utils._current_lang;
-    if (options) {
-        for (var attr in options)
-            this[attr] = options[attr];
+    if (window.jsu) {
+        this.language = window.jsu.getCurrentLang();
     }
-    this.set_language(this.language);
-    var obj = this;
-    $(document).ready(function () {
-        obj._init();
-    });
-    $(window).resize(function () {
-        obj.on_resize();
-    });
+    if (options) {
+        let attr;
+        for (attr in options) {
+            this[attr] = options[attr];
+        }
+    }
+    this.setLanguage(this.language);
+    // see if DOM is already available
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        // call on next available tick
+        setTimeout(this._init.bind(this), 1);
+    } else {
+        document.addEventListener('DOMContentLoaded', this._init.bind(this));
+    }
+    window.addEventListener('resize', this.onResize.bind(this));
 }
 
 OverlayDisplayManager.prototype._init = function () {
-    if (window.odm_id_count) {
-        this.id = window.odm_id_count + 1;
+    if (window.odmIdCount) {
+        window.odmIdCount++;
+        this.id = window.odmIdCount;
+    } else {
+        window.odmIdCount = 1;
+        this.id = 1;
     }
-    window.odm_id_count += 1;
-    var extra_class = "";
-    if (this.overlay_selector_place != "body" || navigator.platform == "iPad" || navigator.platform == "iPhone" || navigator.platform == "iPod") {
-        this.no_fixed = true;
-        extra_class = "no-fixed";
+    let extraClass = '';
+    if (this.overlaySelectorPlace != 'body' || navigator.platform == 'iPad' || navigator.platform == 'iPhone' || navigator.platform == 'iPod') {
+        this.noFixed = true;
+        extraClass = 'no-fixed';
     }
-    var nb_odm_opened = $(".odm-main").length;
-    var html = "";
-    html += "<div id=\"odm_" + this.id + "\" class=\"odm-main "+extra_class+"\">";
-    html +=     "<div class=\"odm-layer\" tabindex=\"0\">";
-    html +=         "<table class=\"odm-table\" role=\"presentation\"><tr class=\"odm-table\"><td class=\"odm-table\">";
-    html +=             "<div role=\"dialog\" tabindex=\"-1\" aria-labelledby=\"odm_title_" + nb_odm_opened + "\" aria-modal=\"true\" class=\"odm-block\">";
-    html +=                 "<button type=\"button\" class=\"odm-close\" title=\""+this.messages.close+"\" aria-label=\""+this.messages.close+"\"><i aria-hidden=\"true\">X</i></button>";
-    html +=                 "<div class=\"odm-top-bar\">";
-    html +=                     "<div class=\"odm-resources\"></div>";
-    html +=                     "<h1 id=\"odm_title_" + nb_odm_opened + "\" class=\"odm-title\"></h1>";
-    html +=                 "</div>";
-    html +=                 "<div class=\"odm-element-place\">";
-    html +=                     "<div class=\"odm-element-content\">";
-    html +=                         "<div class=\"odm-element odm-loading\">"+this.messages.loading+"</div>";
-    html +=                     "</div>";
-    html +=                     "<div class=\"odm-hover-loading\"><div>"+this.messages.loading+"</div></div>";
-    html +=                 "</div>";
-    html +=                 "<div class=\"odm-bottom-bar\">";
-    html +=                     "<div class=\"odm-buttons\"></div>";
-    html +=                 "</div>";
-    html +=                 "<div class=\"odm-previous\"><div class=\"odm-btn-bg\">";
-    html +=                     "<div class=\"odm-btn-icon\">"+this.messages.previous+"</div></div></div>";
-    html +=                 "<div class=\"odm-next\"><div class=\"odm-btn-bg\">";
-    html +=                     "<div class=\"odm-btn-icon\">"+this.messages.next+"</div></div></div>";
-    html +=             "</div>";
-    html +=         "</td></tr></table>";
-    html +=     "</div>";
-    html +=     "<div class=\"odm-closer\" tabindex=\"0\"></div>";
-    html += "</div>";
-    this.$widget = $(html);
-    $(this.overlay_selector_place).append(this.$widget);
+    this.widget = document.createElement('div');
+    this.widget.setAttribute('id', 'odm_' + this.id);
+    this.widget.setAttribute('class', 'odm-main ' + extraClass);
+    this.widget.innerHTML = '<div class="odm-layer" tabindex="0">' +
+        '<table class="odm-table" role="presentation"><tr class="odm-table"><td class="odm-table">' +
+            '<div role="dialog" tabindex="-1" aria-labelledby="odm_title_' + this.id + '" aria-modal="true" class="odm-block">' +
+                '<button type="button" class="odm-close" title="' + this.messages.close + '" aria-label="' + this.messages.close + '"><i aria-hidden="true">X</i></button>' +
+                '<div class="odm-top-bar">' +
+                    '<div class="odm-resources"></div>' +
+                    '<h1 id="odm_title_' + this.id + '" class="odm-title"></h1>' +
+                '</div>' +
+                '<div class="odm-element-place">' +
+                    '<div class="odm-element-content"></div>' +
+                    '<div class="odm-hover-loading"><div>' + this.messages.loading + '</div></div>' +
+                '</div>' +
+                '<div class="odm-bottom-bar">' +
+                    '<div class="odm-buttons"></div>' +
+                '</div>' +
+                '<div class="odm-previous"><div class="odm-btn-bg">' +
+                    '<div class="odm-btn-icon">' + this.messages.previous + '</div></div></div>' +
+                '<div class="odm-next"><div class="odm-btn-bg">' +
+                    '<div class="odm-btn-icon">' + this.messages.next + '</div></div></div>' +
+            '</div>' +
+        '</td></tr></table>' +
+    '</div>' +
+    '<div class="odm-closer" tabindex="0"></div>';
+    document.querySelector(this.overlaySelectorPlace).appendChild(this.widget);
 
     // bind events
-    $(".odm-previous", this.$widget).click({ obj: this }, function (event) {
-        event.data.obj.previous();
+    const obj = this;
+    this.widget.querySelector('.odm-previous').addEventListener('click', function () {
+        obj.previous();
     });
-    $(".odm-next", this.$widget).click({ obj: this }, function (event) {
-        event.data.obj.next();
+    this.widget.querySelector('.odm-next').addEventListener('click', function () {
+        obj.next();
     });
-    $(".odm-close", this.$widget).click({ obj: this }, function (event) {
-        if (!event.data.obj.locked)
-            event.data.obj.hide();
+    this.widget.querySelector('.odm-close').addEventListener('click', function () {
+        if (!obj.locked) {
+            obj.hide();
+        }
     });
-    $(".odm-closer", this.$widget).click({ obj: this }, function (event) {
-        if (!event.data.obj.locked)
-            event.data.obj.hide();
+    this.widget.querySelector('.odm-closer').addEventListener('click', function () {
+        if (!obj.locked) {
+            obj.hide();
+        }
     });
-    $(".odm-element-content", this.$widget).click({ obj: this }, function (event) {
-        if (!event.data.obj.locked && event.data.obj.display_mode == "image" && event.data.obj.resources.length < 2 && event.data.obj.image && !event.data.obj.image.loading_failed)
-            event.data.obj.hide();
+    this.widget.querySelector('.odm-element-content').addEventListener('click', function () {
+        if (!obj.locked && obj.displayMode == 'image' && obj.resources.length < 2 && obj.image && !obj.image.loadingFailed) {
+            obj.hide();
+        }
     });
-    this.$widget.keydown({ obj: this }, function (event) {
-        if (!event.data.obj.displayed)
+    window.addEventListener('keydown', function (event) {
+        if (!obj.displayed) {
             return;
+        }
         switch (event.keyCode) {
             case 27:
-                if (!event.data.obj.locked && event.data.obj.hide_on_escape) {
+                if (!obj.locked && obj.hideOnEscape) {
                     event.stopImmediatePropagation();
-                    event.data.obj.hide();
+                    obj.hide();
                 }
                 break;
             case 37:
                 event.stopImmediatePropagation();
-                event.data.obj.previous();
+                obj.previous();
                 break;
             case 39:
                 event.stopImmediatePropagation();
-                event.data.obj.next();
+                obj.next();
                 break;
         }
     });
-    this.on_resize();
-    if (this.pending_show_params)
-        this.show(this.pending_show_params);
+    this.onResize();
+    if (this.pendingShowParams) {
+        this.show(this.pendingShowParams);
+    }
 };
-OverlayDisplayManager.prototype.trap_focus = function (event) {
-    if (this.ignore_until_focus_changes) {
+OverlayDisplayManager.prototype.trapFocus = function (event) {
+    if (this.ignoreUntilFocusChanges) {
         return;
     }
-    if ($(".odm-block", this.$widget)[0].contains(event.target)) {
-        this.last_focus = event.target;
+    if (this.widget.querySelector('.odm-block').contains(event.target)) {
+        this.lastFocus = event.target;
     } else {
-        this.focus_first_descendant($(".odm-block", this.$widget)[0]);
-        if (this.last_focus == document.activeElement) {
-            this.focus_last_descendant($(".odm-block", this.$widget)[0]);
+        this.focusFirstDescendant(this.widget.querySelector('.odm-block'));
+        if (this.lastFocus == document.activeElement) {
+            this.focusLastDescendant(this.widget.querySelector('.odm-block'));
         }
-        this.last_focus = document.activeElement;
+        this.lastFocus = document.activeElement;
     }
 };
-OverlayDisplayManager.prototype.focus_last_descendant = function (element) {
-    for (var i = element.childNodes.length - 1; i >= 0; i--) {
-        var child = element.childNodes[i];
-        if (this.attempt_focus(child) ||
-            this.focus_last_descendant(child)) {
-        return true;
-        }
-    }
-    return false;
-};
-OverlayDisplayManager.prototype.focus_first_descendant = function (element) {
-    for (var i = 0; i < element.childNodes.length; i++) {
-        var child = element.childNodes[i];
-        if (this.attempt_focus(child) ||
-            this.focus_first_descendant(child)) {
+OverlayDisplayManager.prototype.focusLastDescendant = function (element) {
+    for (let i = element.childNodes.length - 1; i >= 0; i--) {
+        const child = element.childNodes[i];
+        if (this.attemptFocus(child) || this.focusLastDescendant(child)) {
             return true;
         }
     }
     return false;
 };
-OverlayDisplayManager.prototype.attempt_focus = function (element) {
-    if (!this.is_focusable(element)) {
+OverlayDisplayManager.prototype.focusFirstDescendant = function (element) {
+    for (let i = 0; i < element.childNodes.length; i++) {
+        const child = element.childNodes[i];
+        if (this.attemptFocus(child) || this.focusFirstDescendant(child)) {
+            return true;
+        }
+    }
+    return false;
+};
+OverlayDisplayManager.prototype.attemptFocus = function (element) {
+    if (!this.isFocusable(element)) {
         return false;
     }
 
-    this.ignore_until_focus_changes = true;
+    this.ignoreUntilFocusChanges = true;
     try {
         element.focus();
     } catch (e) {
+        console.error('Failed to focus last element.', e);
     }
-    this.ignore_until_focus_changes = false;
+    this.ignoreUntilFocusChanges = false;
     return (document.activeElement === element);
 };
 
 
-OverlayDisplayManager.prototype.is_focusable = function (element) {
+OverlayDisplayManager.prototype.isFocusable = function (element) {
     if (element.tabIndex > 0 || (element.tabIndex === 0 && element.getAttribute('tabIndex') !== null)) {
         return true;
     }
@@ -215,424 +223,521 @@ OverlayDisplayManager.prototype.is_focusable = function (element) {
     }
 };
 
-OverlayDisplayManager.prototype.set_language = function (lang) {
-    if (lang == "fr") {
-        this.language = "fr";
+OverlayDisplayManager.prototype.setLanguage = function (lang) {
+    if (lang == 'fr') {
+        this.language = 'fr';
         this.messages = {
-            close: "Fermer",
-            loading: "Chargement...",
-            not_found: "Image introuvable",
-            unknown_resource: "Type de ressource inconnu",
-            previous: "Pr&eacute;c&eacute;dent",
-            next: "Suivant"
+            close: 'Fermer',
+            loading: 'Chargement...',
+            notFound: 'Image introuvable',
+            unknownResource: 'Type de ressource inconnu',
+            previous: 'Pr&eacute;c&eacute;dent',
+            next: 'Suivant'
         };
-    }
-    else {
-        this.language = "en";
-        this.messages = {
-            close: "Close",
-            loading: "Loading...",
-            not_found: "Image not found",
-            unknown_resource: "Unknown resource type",
-            previous: "Previous",
-            next: "Next"
-        };
-    }
-    if (this.$widget) {
-        // replace messages
-        $(".odm-close", this.$widget).attr("title", this.messages.close);
-        $(".odm-close", this.$widget).attr("aria-label", this.messages.close);
-        $(".odm-loading", this.$widget).html(this.messages.loading);
-        $(".odm-hover-loading", this.$widget).html(this.messages.loading);
-        $(".odm-previous .odm-btn-icon", this.$widget).html(this.messages.previous);
-        $(".odm-next .odm-btn-icon", this.$widget).html(this.messages.next);
-    }
-};
-
-OverlayDisplayManager.prototype.on_resize = function () {
-    var em_factor;
-    try {
-        // get number of px of one em
-        em_factor = parseFloat(getComputedStyle($(".odm-element", this.$widget)[0]).fontSize);
-    } catch (e) {
-        em_factor = 15;
-    }
-    var width_used = this.margin;
-    var height_used = this.margin;
-    if (this.top_bar_displayed)
-        height_used += this.top_bar_height;
-    if (this.bottom_bar_displayed)
-        height_used += this.bottom_bar_height;
-    if (this.overlay_selector_place != "body") {
-        this.max_width = $(this.overlay_selector_place).width() - (width_used * em_factor);
-        this.max_height = $(this.overlay_selector_place).height() - (height_used * em_factor);
     } else {
-        this.max_width = $(window).width() - (width_used * em_factor);
-        this.max_height = $(window).height() - (height_used * em_factor);
+        this.language = 'en';
+        this.messages = {
+            close: 'Close',
+            loading: 'Loading...',
+            notFound: 'Image not found',
+            unknownResource: 'Unknown resource type',
+            previous: 'Previous',
+            next: 'Next'
+        };
     }
-    var padding = this.element_padding_displayed ? this.element_padding * em_factor : 0;
-    if (this.max_width > 0)
-        $(".odm-element", this.$widget).css("max-width", (this.max_width-padding)+"px");
-    if (this.max_height > 0)
-        $(".odm-element", this.$widget).css("max-height", (this.max_height-padding)+"px");
+    if (this.widget) {
+        // replace messages
+        this.widget.querySelector('.odm-close').setAttribute('title', this.messages.close);
+        this.widget.querySelector('.odm-close').setAttribute('aria-label', this.messages.close);
+        this.widget.querySelector('.odm-hover-loading').innerHTML = this.messages.loading;
+        this.widget.querySelector('.odm-previous .odm-btn-icon').innerHTML = this.messages.previous;
+        this.widget.querySelector('.odm-next .odm-btn-icon').innerHTML = this.messages.next;
+    }
 };
 
-OverlayDisplayManager.prototype._set_resources = function (params) {
+OverlayDisplayManager.prototype.onResize = function () {
+    let emFactor = 15;
+    if (this.displayedElement) {
+        try {
+            // get number of px of one em
+            const fontSize = window.getComputedStyle(this.widget.querySelector('.odm-element')).getPropertyValue('fontSize');
+            if (fontSize.indexOf('px') > 0) {
+                emFactor = parseFloat(fontSize.replace(/[^0-9.]+/g,''));
+            }
+        } catch (e) {
+            // ignore error and use default value
+        }
+    }
+    const widthUsed = this.margin;
+    let heightUsed = this.margin;
+    if (this.topBarDisplayed) {
+        heightUsed += this.topBarHeight;
+    }
+    if (this.bottomBarDisplayed) {
+        heightUsed += this.bottomBarHeight;
+    }
+    if (this.overlaySelectorPlace != 'body') {
+        const placeEle = document.querySelector(this.overlaySelectorPlace);
+        this.maxWidth = placeEle.offsetWidth - (widthUsed * emFactor);
+        this.maxHeight = placeEle.offsetHeight - (heightUsed * emFactor);
+    } else {
+        this.maxWidth = window.innerWidth - (widthUsed * emFactor);
+        this.maxHeight = window.innerHeight - (heightUsed * emFactor);
+    }
+    const padding = this.elementPaddingDisplayed ? this.elementPadding * emFactor : 0;
+    if (this.displayedElement) {
+        if (this.maxWidth > 0) {
+            this.widget.querySelector('.odm-element').style.setProperty('max-width', (this.maxWidth - padding) + 'px');
+        }
+        if (this.maxHeight > 0) {
+            this.widget.querySelector('.odm-element').style.setProperty('max-height', (this.maxHeight - padding) + 'px');
+        }
+    }
+};
+
+OverlayDisplayManager.prototype._setResources = function (params) {
     // reset content
     if (!this.displayed) {
-        var html = $("<div class=\"odm-element odm-loading\">"+this.messages.loading+"</div>");
-        this.loading_displayed = true;
-        this._display_element(html);
+        this.loadingDisplayed = true;
+        const loadingEle = document.createElement('div');
+        loadingEle.setAttribute('class', 'odm-element odm-loading');
+        loadingEle.innerHTML = this.messages.loading;
+        this._displayElement(loadingEle);
         this.image = null;
-        this.current_resource = null;
+        this.currentResource = null;
     }
     // parse resources
     this.resources = [];
-    if (typeof params != "string" && params.length !== undefined) {
-        for (var i=0; i < params.length; i++) {
-            this._add_resources(params[i]);
+    if (typeof params != 'string' && params.length !== undefined) {
+        for (let i = 0; i < params.length; i++) {
+            this._addResources(params[i]);
         }
+    } else {
+        this._addResources(params);
     }
-    else
-        this._add_resources(params);
     // display require elements
-    this.current_index = 0;
-    if (this.resources.length < 1)
+    this.currentIndex = 0;
+    if (this.resources.length < 1) {
         return;
+    }
     if (this.resources.length > 1) {
-        if (params.index && params.index > 0 && params.index < params.length)
-            this.current_index = params.index;
-        $(".odm-resources", this.$widget).html((this.current_index+1)+" / "+this.resources.length);
-        if (!this.top_bar_displayed) {
-            this.top_bar_displayed = true;
-            this.$widget.addClass("odm-top-bar-displayed");
-            this.on_resize();
+        if (params.index && params.index > 0 && params.index < params.length) {
+            this.currentIndex = params.index;
         }
-        if (this.current_index > 0)
-            $(".odm-previous", this.$widget).css("display", "block");
-        else
-            $(".odm-previous", this.$widget).css("display", "none");
-        if (this.current_index < this.resources.length - 1)
-            $(".odm-next", this.$widget).css("display", "block");
-        else
-            $(".odm-next", this.$widget).css("display", "none");
-    }
-    else {
-        if (this.top_bar_displayed && !this.title) {
-            this.top_bar_displayed = false;
-            this.$widget.removeClass("odm-top-bar-displayed");
-            this.on_resize();
+        this.widget.querySelector('.odm-resources').innerHTML = (this.currentIndex + 1) + ' / ' + this.resources.length;
+        if (!this.topBarDisplayed) {
+            this.topBarDisplayed = true;
+            this.widget.classList.add('odm-top-bar-displayed');
+            this.onResize();
         }
-        $(".odm-resources", this.$widget).html("");
-        $(".odm-previous", this.$widget).css("display", "none");
-        $(".odm-next", this.$widget).css("display", "none");
+        if (this.currentIndex > 0) {
+            this.widget.querySelector('.odm-previous').style.setProperty('display', 'block');
+        } else {
+            this.widget.querySelector('.odm-previous').style.setProperty('display', 'none');
+        }
+        if (this.currentIndex < this.resources.length - 1) {
+            this.widget.querySelector('.odm-next').style.setProperty('display', 'block');
+        } else {
+            this.widget.querySelector('.odm-next').style.setProperty('display', 'none');
+        }
+    } else {
+        if (this.topBarDisplayed && !this.title) {
+            this.topBarDisplayed = false;
+            this.widget.classList.remove('odm-top-bar-displayed');
+            this.onResize();
+        }
+        this.widget.querySelector('.odm-resources').innerHTML = '';
+        this.widget.querySelector('.odm-previous').style.setProperty('display', 'none');
+        this.widget.querySelector('.odm-next').style.setProperty('display', 'none');
     }
-    return this.resources[this.current_index];
+    return this.resources[this.currentIndex];
 };
 
-OverlayDisplayManager.prototype._add_resources = function (res) {
-    if (typeof res == "string")
+OverlayDisplayManager.prototype._addResources = function (res) {
+    if (typeof res == 'string') {
         this.resources.push({ image: res });
-    else
+    } else {
         this.resources.push(res);
+    }
 };
 
-OverlayDisplayManager.prototype._check_title_display = function (title) {
-    if (this.title == title)
+OverlayDisplayManager.prototype._checkTitleDisplay = function (title) {
+    if (this.title == title) {
         return;
-
-    $(".odm-title", this.$widget).html(title);
-    this.title = title;
-    var should_display = title || this.resources.length > 1;
-    if (should_display && !this.top_bar_displayed) {
-        this.top_bar_displayed = true;
-        this.$widget.addClass("odm-top-bar-displayed");
-        this.on_resize();
     }
-    else if (!should_display && this.top_bar_displayed) {
-        this.top_bar_displayed = false;
-        this.$widget.removeClass("odm-top-bar-displayed");
-        this.on_resize();
+
+    this.widget.querySelector('.odm-title').innerHTML = title;
+    this.title = title;
+    const shouldDisplay = title || this.resources.length > 1;
+    if (shouldDisplay && !this.topBarDisplayed) {
+        this.topBarDisplayed = true;
+        this.widget.classList.add('odm-top-bar-displayed');
+        this.onResize();
+    } else if (!shouldDisplay && this.topBarDisplayed) {
+        this.topBarDisplayed = false;
+        this.widget.classList.remove('odm-top-bar-displayed');
+        this.onResize();
     }
 };
 
-OverlayDisplayManager.prototype._check_buttons_display = function (resource) {
-    var btns = resource.buttons;
+OverlayDisplayManager.prototype._checkButtonsDisplay = function (resource) {
+    const btns = resource.buttons;
     if (btns) {
         // update buttons
         if (!btns.loaded) {
-            $(".odm-buttons", this.$widget).html("");
-            for (var i=0; i < btns.length; i++) {
-                var btn = $("<button class=\""+this.default_buttons_class+"\"/>");
-                btn.html(btns[i].label);
-                if (btns[i].id)
-                    btn.attr("id", btns[i].id);
-                if (btns[i].disabled)
-                    btn.attr("disabled", "disabled");
-                if (btns[i].klass)
-                    btn.attr("class", this.default_buttons_class+" "+btns[i].klass);
-                if (btns[i].callback) {
-                    var data = btns[i].data ? btns[i].data : {};
-                    data.odm = this;
-                    btn.click(data, btns[i].callback);
+            this.widget.querySelector('.odm-buttons').innerHTML = '';
+            for (let i = 0; i < btns.length; i++) {
+                const btn = document.createElement('button');
+                btn.setAttribute('type', 'button');
+                btn.innerHTML = btns[i].label;
+                if (btns[i].id) {
+                    btn.setAttribute('id', btns[i].id);
                 }
-                if (btns[i].close)
-                    btn.click({ odm: this }, function (event) { event.data.odm.hide(); });
-                $(".odm-buttons", this.$widget).append(btn);
+                if (btns[i].disabled) {
+                    btn.setAttribute('disabled', 'disabled');
+                }
+                if (btns[i].klass) {
+                    btn.setAttribute('class', this.defaultButtonsClass + ' ' + btns[i].klass);
+                } else {
+                    btn.setAttribute('class', this.defaultButtonsClass);
+                }
+                if (btns[i].callback) {
+                    const callback = btns[i].callback;
+                    const data = btns[i].data ? btns[i].data : {};
+                    data.odm = this;
+                    btn.addEventListener('click', function (event) {
+                        callback(event, data);
+                    });
+                }
+                if (btns[i].close) {
+                    btn.addEventListener('click', this.hide.bind(this));
+                }
+                this.widget.querySelector('.odm-buttons').appendChild(btn);
             }
             btns.loaded = true;
         }
         // show bottom bar
-        if (!this.bottom_bar_displayed) {
-            this.$widget.addClass("odm-bottom-bar-displayed");
-            this.bottom_bar_displayed = true;
-            this.on_resize();
+        if (!this.bottomBarDisplayed) {
+            this.widget.classList.add('odm-bottom-bar-displayed');
+            this.bottomBarDisplayed = true;
+            this.onResize();
         }
-        if (!this.focus_first_descendant($(".odm-element-content", this.$widget)[0])) {
+        if (!this.focusFirstDescendant(this.widget.querySelector('.odm-element-content'))) {
             // if no focusable element is in content, try to focus any button in the top block
-            this.focus_first_descendant($(".odm-block", this.$widget)[0]);
+            this.focusFirstDescendant(this.widget.querySelector('.odm-block'));
         }
-    }
-    else if (this.bottom_bar_displayed) {
+    } else if (this.bottomBarDisplayed) {
         // hide bottom bar and clear buttons
-        this.$widget.removeClass("odm-bottom-bar-displayed");
-        this.bottom_bar_displayed = false;
-        $(".odm-buttons", this.$widget).html("");
-        this.on_resize();
+        this.widget.classList.remove('odm-bottom-bar-displayed');
+        this.bottomBarDisplayed = false;
+        this.widget.querySelector('.odm-buttons').innerHTML = '';
+        this.onResize();
     }
 };
 
-OverlayDisplayManager.prototype._set_locked = function (locked) {
-    if (this.locked == locked)
+OverlayDisplayManager.prototype._setLocked = function (locked) {
+    if (this.locked == locked) {
         return;
+    }
 
     this.locked = locked;
-    if (this.locked)
-        $(".odm-close", this.$widget).css("display", "none");
-    else
-        $(".odm-close", this.$widget).css("display", "");
+    const display = this.locked ? 'none' : '';
+    this.widget.querySelector('.odm-close').style.setProperty('display', display);
 };
 
 
-OverlayDisplayManager.prototype._on_resource_hide = function () {
-    if (this.current_resource && this.current_resource.on_hide) {
-        this.current_resource.on_hide();
-        // Don't call on_hide twice
-        delete this.current_resource.on_hide;
+OverlayDisplayManager.prototype._onResourceHide = function () {
+    if (this.currentResource && this.currentResource.onHide) {
+        this.currentResource.onHide();
+        // Don't call onHide twice
+        delete this.currentResource.onHide;
     }
 };
-OverlayDisplayManager.prototype._load_resource = function (resource) {
-    this._show_loading();
-    this._on_resource_hide();
+OverlayDisplayManager.prototype._loadResource = function (resource) {
+    this._onResourceHide();
 
-    this._check_title_display(resource.title ? resource.title : "");
-    this._check_buttons_display(resource);
-    this._set_locked(resource.locked ? true : false);
+    this._checkTitleDisplay(resource.title ? resource.title : '');
+    this._checkButtonsDisplay(resource);
+    this._setLocked(Boolean(resource.locked));
 
-    var obj = this;
-    var callback = function () {
-        obj._hide_loading();
-    };
-    this.current_resource = resource;
-    if (resource.image)
+    this.currentResource = resource;
+    if (resource.image) {
         // image mode
-        this._load_image(resource, callback);
-    else if (resource.iframe)
+        this._loadImage(resource);
+    } else if (resource.iframe) {
         // iframe mode
-        this._load_iframe(resource, callback);
-    else if (resource.html)
+        this._loadIframe(resource);
+    } else if (resource.html) {
         // html mode
-        this._load_html(resource, callback);
-    else {
-        this._display_error("unknown_resource");
-        callback(false);
+        this._loadHTML(resource);
+    } else {
+        this._displayError('unknownResource');
     }
 };
 
 // Main functions
 OverlayDisplayManager.prototype.change = function (params) {
-    if (!this.$widget || !params)
-        return;
-
-    var resource = this._set_resources(params);
-    if (this.displayed)
-        this._load_resource(resource);
-};
-OverlayDisplayManager.prototype.show = function (params) {
-    if (!this.$widget) {
-        this.pending_show_params = params;
+    if (!this.widget || !params) {
         return;
     }
-    this.pending_show_params = null;
-    if (this.displayed)
-        return this.change(params);
 
-    this.element_first_focused = document.activeElement;
-    var resource;
-    if (params)
-        resource = this._set_resources(params);
-    else if (this.resources.length < 1)
+    const resource = this._setResources(params);
+    if (this.displayed) {
+        this._loadResource(resource);
+    }
+};
+OverlayDisplayManager.prototype.show = function (params) {
+    if (!this.widget) {
+        this.pendingShowParams = params;
         return;
-    else if (!this.current_resource)
-        resource = this.resources[this.current_index];
-    if (resource)
-        this._load_resource(resource);
-    if (this.no_fixed)
-        $(".odm-table", this.$widget).css("margin-top", ($(document).scrollTop()+10)+"px");
+    }
+    this.pendingShowParams = null;
+    if (this.displayed) {
+        return this.change(params);
+    }
+
+    this.elementFirstFocused = document.activeElement;
+    let resource;
+    if (params) {
+        resource = this._setResources(params);
+    } else if (this.resources.length < 1) {
+        return;
+    } else if (!this.currentResource) {
+        resource = this.resources[this.currentIndex];
+    }
+    if (resource) {
+        this._loadResource(resource);
+    }
+    if (this.noFixed) {
+        const scrollY = window.scrollY !== undefined ? window.scrollY : 0;
+        this.widget.querySelector('.odm-table').style.setProperty('margin-top', (scrollY + 10) + 'px');
+    }
     this.displayed = true;
-    var obj = this;
-    this.$widget.addClass("odm-no-transition").stop(true, false).fadeIn(250, function () {
-        $(this).removeClass("odm-no-transition");
-        obj.last_focus = document.activeElement;
-        obj.$widget[0].addEventListener("focus", obj.trap_focus.bind(obj), true);
-        if (!obj.focus_first_descendant($(".odm-element-content", obj.$widget)[0])) {
+    this.widget.style.setProperty('opacity', '0');
+    this.widget.style.setProperty('display', 'block');
+    this.widget.style.setProperty('opacity', '');
+    const obj = this;
+    setTimeout(function () {
+        // wait for transition to end
+        obj.lastFocus = document.activeElement;
+        obj.widget.addEventListener('focus', obj.trapFocus.bind(obj), true);
+        if (!obj.focusFirstDescendant(obj.widget.querySelector('.odm-element-content'))) {
             // if no focusable element is in content, try to focus any button in the top block
-            obj.focus_first_descendant($(".odm-block", obj.$widget)[0]);
+            obj.focusFirstDescendant(obj.widget.querySelector('.odm-block'));
         }
-    });
+    }, 300);
 };
 OverlayDisplayManager.prototype.hide = function () {
-    if (this.pending_show_params)
-        this.pending_show_params = null;
-    if (!this.displayed)
+    if (this.pendingShowParams) {
+        this.pendingShowParams = null;
+    }
+    if (!this.displayed) {
         return;
+    }
 
     this.displayed = false;
-    var obj = this;
-    this.$widget.addClass("odm-no-transition").stop(true, false).fadeOut(250, function () {
-        $(this).removeClass("odm-no-transition");
-        if (obj.element_first_focused) {
-            obj.attempt_focus(obj.element_first_focused);
+    this.widget.style.setProperty('opacity', '0');
+    const obj = this;
+    setTimeout(function () {
+        // wait for transition to end
+        if (obj.displayed) {
+            // show was called during timeout
+            return;
         }
-        obj._on_resource_hide();
-        obj.$widget[0].removeEventListener("focus", obj.trap_focus, true);
-        obj.last_focus = document.activeElement;
-    });
+        obj.widget.style.setProperty('display', '');
+        obj._onResourceHide();
+        if (obj.elementFirstFocused) {
+            obj.attemptFocus(obj.elementFirstFocused);
+        }
+        obj.widget.removeEventListener('focus', obj.trapFocus, true);
+        obj.lastFocus = document.activeElement;
+    }, 300);
 };
 
 // Resources list functions
-OverlayDisplayManager.prototype.go_to_index = function (index) {
-    if (index >= this.resources.length || index < 0)
+OverlayDisplayManager.prototype.goToIndex = function (index) {
+    if (index >= this.resources.length || index < 0) {
         return;
+    }
 
-    $(".odm-resources", this.$widget).html((index+1)+" / "+this.resources.length);
-    if (index > 0)
-        $(".odm-previous", this.$widget).css("display", "block");
-    else
-        $(".odm-previous", this.$widget).css("display", "");
-    if (index < this.resources.length - 1)
-        $(".odm-next", this.$widget).css("display", "block");
-    else
-        $(".odm-next", this.$widget).css("display", "");
-    if (this.current_index != index) {
-        this.current_index = index;
-        this._load_resource(this.resources[this.current_index]);
+    this.widget.querySelector('.odm-resources').innerHTML = (index + 1) + ' / ' + this.resources.length;
+    if (index > 0) {
+        this.widget.querySelector('.odm-previous').style.setProperty('display', 'block');
+    } else {
+        this.widget.querySelector('.odm-previous').style.setProperty('display', '');
+    }
+    if (index < this.resources.length - 1) {
+        this.widget.querySelector('.odm-next').style.setProperty('display', 'block');
+    } else {
+        this.widget.querySelector('.odm-next').style.setProperty('display', '');
+    }
+    if (this.currentIndex != index) {
+        this.currentIndex = index;
+        this._loadResource(this.resources[this.currentIndex]);
     }
 };
 OverlayDisplayManager.prototype.next = function () {
-    if (this.resources.length > 0 && this.current_index + 1 < this.resources.length)
-        this.go_to_index(this.current_index + 1);
+    if (this.resources.length > 0 && this.currentIndex + 1 < this.resources.length) {
+        this.goToIndex(this.currentIndex + 1);
+    }
 };
 OverlayDisplayManager.prototype.previous = function () {
-    if (this.resources.length > 0 && this.current_index - 1 >= 0)
-        this.go_to_index(this.current_index - 1);
+    if (this.resources.length > 0 && this.currentIndex - 1 >= 0) {
+        this.goToIndex(this.currentIndex - 1);
+    }
 };
 
 // Element display
-OverlayDisplayManager.prototype._display_element = function ($element, padding) {
-    this.element_padding_displayed = padding;
-    var $previous = $(".odm-element-content .odm-element", this.$widget);
-    $(".odm-element-content", this.$widget).append($element);
-    if ($previous.length < 1)
-        return;
-    if ($previous.hasClass("odm-loading") || $previous.hasClass("odm-error")) {
-        $previous.remove();
+OverlayDisplayManager.prototype._displayElement = function (element, padding) {
+    const elementPlace = this.widget.querySelector('.odm-element-content');
+    // hide previous element
+    if (this.displayedElement) {
+        const previous = this.displayedElement;
+        const hidePrevious = function () {
+            if (previous.parentElement == elementPlace) {
+                previous.parentElement.removeChild(previous);
+            }
+            previous.style.setProperty('opacity', '');
+            previous.style.setProperty('position', '');
+            previous.classList.remove('odm-element');
+        };
+        if (!this.displayed || previous.classList.contains('odm-loading') || previous.classList.contains('odm-error')) {
+            hidePrevious();
+        } else {
+            previous.style.setProperty('opacity', '0');
+            previous.style.setProperty('position', 'absolute');
+            setTimeout(hidePrevious, 300);
+        }
     }
-    else if ($element.hasClass("odm-loading") || $element.hasClass("odm-error")) {
-        $previous.detach();
-    }
-    else {
-        $previous.css("opacity", "0").css("position", "absolute");
-        setTimeout(function () {
-            $previous.detach();
-        }, 500);
+    // show new element
+    this.elementPaddingDisplayed = Boolean(padding);
+    this.displayedElement = element;
+    if (element) {
+        elementPlace.appendChild(element);
     }
 };
 
 // Error and loading management
-OverlayDisplayManager.prototype._display_error = function (msg) {
-    var html = $("<div class=\"odm-element odm-error\">"+((msg in this.messages) ? this.messages[msg] : msg)+"</div>");
-    this._display_element(html);
+OverlayDisplayManager.prototype._displayError = function (msg) {
+    const msgEle = document.createElement('div');
+    msgEle.innerHTML = '<div class="odm-element odm-error">' + ((msg in this.messages) ? this.messages[msg] : msg) + '</div>';
+    this._displayElement(msgEle);
 };
-OverlayDisplayManager.prototype._show_loading = function () {
-    if (this.loading_displayed)
+OverlayDisplayManager.prototype._showLoading = function () {
+    if (this.loadingDisplayed) {
         return;
-    this.loading_displayed = true;
-    if (this.loading_timeout_id !== null) {
-        clearTimeout(this.loading_timeout_id);
-        this.loading_timeout_id = null;
     }
-    var obj = this;
-    this.loading_timeout_id = setTimeout(function () {
-        obj.$widget.addClass("odm-hover-loading-displayed");
-    }, 500);
+    this.loadingDisplayed = true;
+    if (this.loadingTimeoutId !== null) {
+        clearTimeout(this.loadingTimeoutId);
+        this.loadingTimeoutId = null;
+    }
+    const obj = this;
+    this.loadingTimeoutId = setTimeout(function () {
+        obj.widget.classList.add('odm-hover-loading-displayed');
+    }, 300);
 };
-OverlayDisplayManager.prototype._hide_loading = function () {
-    if (!this.loading_displayed)
+OverlayDisplayManager.prototype._hideLoading = function () {
+    if (!this.loadingDisplayed) {
         return;
-    this.loading_displayed = false;
-    if (this.loading_timeout_id !== null) {
-        clearTimeout(this.loading_timeout_id);
-        this.loading_timeout_id = null;
     }
-    this.$widget.removeClass("odm-hover-loading-displayed");
+    this.loadingDisplayed = false;
+    if (this.loadingTimeoutId !== null) {
+        clearTimeout(this.loadingTimeoutId);
+        this.loadingTimeoutId = null;
+    }
+    this.widget.classList.remove('odm-hover-loading-displayed');
 };
 
 // Image management
-OverlayDisplayManager.prototype._load_image = function (resource, callback) {
-    if (this.display_mode != "image")
-        this.display_mode = "image";
-    else if (this.image && this.image.ori_src == resource.image) {
-        callback(this.image.loading_failed ? false : true);
+OverlayDisplayManager.prototype._loadImage = function (resource, callback) {
+    if (this.displayMode != 'image') {
+        this.displayMode = 'image';
+        // show loading element
+        this.loadingDisplayed = true;
+        const loadingEle = document.createElement('div');
+        loadingEle.setAttribute('class', 'odm-element odm-loading');
+        loadingEle.innerHTML = this.messages.loading;
+        this._displayElement(loadingEle);
+    } else if (this.image && this.image.oriSrc == resource.image) {
+        if (callback) {
+            callback(Boolean(this.image.loadingFailed));
+        }
         return;
     }
 
     this.image = new Image();
     this.image.odm = this;
-    this.image.odm_callback = callback;
-    var alt = resource.alt || "";
+    this.image.odmCallback = callback;
+    const alt = resource.alt || '';
+    this._showLoading();
     this.image.onload = function () {
-        var $img = $("<img class=\"odm-element\" alt=\"" + alt + "\" src=\""+this.src+"\" style=\"max-width: "+this.odm.max_width+"px; max-height: "+this.odm.max_height+"px;\"/>");
-        this.odm._display_element($img);
-        this.odm_callback(true);
+        const imgEle = document.createElement('img');
+        imgEle.setAttribute('class', 'odm-element');
+        imgEle.setAttribute('alt', alt);
+        imgEle.setAttribute('src', this.src);
+        imgEle.setAttribute('style', 'max-width: ' + this.odm.maxWidth + 'px; max-height: ' + this.odm.maxHeight + 'px;');
+        this.odm._hideLoading();
+        this.odm._displayElement(imgEle);
+        if (this.odmCallback) {
+            this.odmCallback(true);
+        }
     };
     this.image.onabort = this.image.onload;
     this.image.onerror = function () {
-        this.loading_failed = true;
-        this.odm._display_error("not_found");
-        this.odm_callback(false);
+        this.loadingFailed = true;
+        this.odm._hideLoading();
+        this.odm._displayError('notFound');
+        if (this.odmCallback) {
+            this.odmCallback(false);
+        }
     };
-    this.image.ori_src = resource.image;
+    this.image.oriSrc = resource.image;
     this.image.src = resource.image;
 };
 
 // Iframe management
-OverlayDisplayManager.prototype._load_iframe = function (resource, callback) {
-    if (this.display_mode != "iframe")
-        this.display_mode = "iframe";
-    var width = resource.width ? resource.width : this.max_width+"px";
-    var height = resource.height ? resource.height : this.max_height+"px";
-    var $iframe = $("<iframe class=\"odm-element\" src=\""+resource.iframe+"\" style=\"width: "+width+"; height: "+height+";\"></iframe>");
-    this._display_element($iframe);
-    callback(true);
+OverlayDisplayManager.prototype._loadIframe = function (resource, callback) {
+    if (this.displayMode != 'iframe') {
+        this.displayMode = 'iframe';
+    }
+    const width = resource.width ? resource.width : this.maxWidth + 'px';
+    const height = resource.height ? resource.height : this.maxHeight + 'px';
+    const ifrEle = document.createElement('iframe');
+    ifrEle.setAttribute('class', 'odm-element');
+    ifrEle.setAttribute('src', resource.iframe);
+    ifrEle.setAttribute('style', 'width: ' + width + '; height: ' + height + ';');
+    this._displayElement(ifrEle);
+    if (callback) {
+        callback(true);
+    }
 };
 
 // HTML management
-OverlayDisplayManager.prototype._load_html = function (resource, callback) {
-    if (this.display_mode != "html")
-        this.display_mode = "html";
-    var $html = (typeof resource.html == "string") ? $("<div>"+resource.html+"</div>") : resource.html.detach();
-    $html.addClass("odm-element").css("max-width", (this.max_width-this.element_padding)+"px").css("max-height", (this.max_height-this.element_padding)+"px").css("opacity", "").css("position", "");
-    this._display_element($html, true);
-    callback(true);
+OverlayDisplayManager.prototype._loadHTML = function (resource, callback) {
+    if (this.displayMode != 'html') {
+        this.displayMode = 'html';
+    }
+    let htEle;
+    if (typeof resource.html === 'string') {
+        htEle = document.createElement('div');
+        htEle.innerHTML = resource.html;
+    } else if ('detach' in resource.html) {
+        // jquery element
+        htEle = resource.html.detach();
+    } else {
+        htEle = resource.html;
+        if (htEle.parentElement) {
+            htEle.parentElement.removeChild(htEle);
+        }
+    }
+    htEle.classList.add('odm-element');
+    htEle.style.setProperty('max-width', (this.maxWidth - this.elementPadding) + 'px');
+    htEle.style.setProperty('max-height', (this.maxHeight - this.elementPadding) + 'px');
+    htEle.style.setProperty('opacity', '');
+    htEle.style.setProperty('position', '');
+    this._displayElement(htEle, true);
+    if (callback) {
+        callback(true);
+    }
 };

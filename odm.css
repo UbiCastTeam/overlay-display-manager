@@ -18,6 +18,7 @@
     display: none;
     background: rgba(0, 0, 0, 0.7);
     z-index: 50;
+    transition: opacity 0.3s linear 0s;
 }
 .odm-main.no-fixed {
     position: absolute;
@@ -166,9 +167,6 @@
     min-height: 20px;
     vertical-align: top;
     transition: opacity 0.3s linear 0s;
-}
-.odm-main.odm-no-transition .odm-element {
-    transition: none;
 }
 .odm-main img.odm-element {
     max-width: 100%;

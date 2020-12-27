@@ -3,99 +3,11 @@
 <head>
     <title>Overlay displayer manager test page</title>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-    
+
     <link rel="stylesheet" type="text/css" href="../odm.css"/>
-    
-    <script type="text/javascript" src="jquery.min.js"></script>
+
     <script type="text/javascript" src="../odm.js"></script>
-    <script type="text/javascript">
-        var odm = new OverlayDisplayManager();
-        var odm_in_sub_div = new OverlayDisplayManager({"overlay_selector_place": "#object"});
-        $(document).ready(function () {
-            $("#odm_img").click(function () {
-                odm.show("1.jpg");
-            });
-            $("#odm_imgs").click(function () {
-                odm.show(["1.jpg", "2.jpg", "3.jpg", "4.jpg"]);
-            });
-            $("#odm_imgs404").click(function () {
-                odm.show(["1.jpg", "2.jpg", "404.jpg", "3.jpg", "4.jpg"]);
-            });
-            $("#odm_imgchange").click(function () {
-                odm.change("3.jpg");
-            });
-            $("#odm_img404").click(function () {
-                odm.show("404.jpg");
-            });
-            $("#odm_img404title").click(function () {
-                odm.show({ image: "404.jpg", title: "404" });
-            });
-            $("#odm_html").click(function () {
-                odm.show({ title: "feegeg", html: "Sed efficitur ac enim at dictum. Sed hendrerit vulputate imperdiet. Quisque ultricies tortor eget felis molestie eleifend. Donec ut vulputate mauris. Nulla libero odio, condimentum ut efficitur ac, porta id lacus. Vivamus dictum tortor in ultrices vehicula. Integer sed tortor tincidunt, laoreet est eget, porta enim. Duis venenatis libero sit amet leo sodales sollicitudin." });
-            });
-            $("#odm_object").click(function () {
-                var $object = $("#object div");
-                odm.show({
-                    title: "object",
-                    html: $object,
-                    on_hide: function () { $("#object").append($object); }
-                });
-            });
-            $("#odm_iframe").click(function () {
-                odm.show({ title: "feegeg", iframe: "http://localhost/" });
-            });
-            $("#odm_iframe_buttons").click(function () {
-                odm.show({
-                    title: "Iframe + buttons",
-                    iframe: "http://localhost/",
-                    buttons: [{ label: "test", callback: function () { alert("test"); } }]
-                });
-            });
-            $("#odm_locked").click(function () {
-                odm.show({
-                    image: "4.jpg",
-                    title: "Locked overlay",
-                    locked: true,
-                    buttons: [{ label: "close", close: true }],
-                    on_hide: function () { console.log("Locked overlay closed."); }
-                });
-            });
-            $("#odm_show").click(function () {
-                odm.show();
-            });
-            $("#odm_lang").change(function () {
-                odm.set_language($(this).val());
-            });
-            $("#odm_lang").change();
-            $("#odm_in_sub_div_place").click(function () {
-                odm_in_sub_div.show("1.jpg");
-            });
-            $("#odm_in_sub_div_place_with_iframe").click(function () {
-                odm_in_sub_div.show({
-                    title: "Iframe + buttons",
-                    iframe: "http://localhost/",
-                    buttons: [{ label: "test", callback: function () { alert("test"); } }]
-                });
-            });
-            
-            $(window).keypress(function (event) {
-                var key = event.keyCode || event.which;
-                if (key == 48)
-                    $("#odm_imgchange").click();
-                else if (key == 49)
-                    $("#odm_img").click();
-                else if (key == 50)
-                    $("#odm_html").click();
-                else if (key == 51)
-                    $("#odm_img404").click();
-                else if (key == 52)
-                    $("#odm_imgs").click();
-                //else
-                //    console.log("key pressed:", key);
-            });
-        });
-    </script>
-    
+
     <style>
         body {
             font-size: 0.9em;
@@ -112,7 +24,7 @@
         :focus {
             outline: 2px dotted rgba(255, 0, 0, 0.8);
         }
-        #object {
+        #text_place {
             position: relative;
         }
     </style>
@@ -139,7 +51,7 @@
             <option value="fr">Language: fr</option>
         </select>
     </div>
-    
+
     <ul>Keyboard tests:
         <li>0: Change image</li>
         <li>1: Mono image</li>
@@ -147,9 +59,9 @@
         <li>3: 404 image</li>
         <li>4: Multi images</li>
     </ul>
-    
-    <div id="object">
-        <div>
+
+    <div id="text_place">
+        <div id="text_content">
 <p><b>Some text used to test object management</b></p>
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque nec aliquam tellus. Suspendisse potenti. Pellentesque pharetra lectus sed nisl egestas, sed laoreet mi vestibulum. In ullamcorper purus sed blandit laoreet. Suspendisse eleifend feugiat sodales. Quisque suscipit ultrices luctus. Mauris lacinia pulvinar metus. Sed odio massa, feugiat ac dolor sed, euismod porta eros. Duis sodales interdum nisl, non rhoncus orci tempus convallis. Ut vitae interdum eros, in lacinia enim.
 
@@ -163,6 +75,94 @@ Sed commodo tellus nibh, eget varius ipsum malesuada eu. Etiam lobortis rhoncus 
 <p><button type="button">Test button for focus</button></p>
         </div>
     </div>
+
+    <script type="text/javascript">
+        var odm = new OverlayDisplayManager();
+        var odmInSubDiv = new OverlayDisplayManager({'overlaySelectorPlace': '#text_place'});
+        document.getElementById('odm_img').addEventListener('click', function () {
+            odm.show('1.jpg');
+        });
+        document.getElementById('odm_imgs').addEventListener('click', function () {
+            odm.show(['1.jpg', '2.jpg', '3.jpg', '4.jpg']);
+        });
+        document.getElementById('odm_imgs404').addEventListener('click', function () {
+            odm.show(['1.jpg', '2.jpg', '404.jpg', '3.jpg', '4.jpg']);
+        });
+        document.getElementById('odm_imgchange').addEventListener('click', function () {
+            odm.change('3.jpg');
+        });
+        document.getElementById('odm_img404').addEventListener('click', function () {
+            odm.show('404.jpg');
+        });
+        document.getElementById('odm_img404title').addEventListener('click', function () {
+            odm.show({ image: '404.jpg', title: '404' });
+        });
+        document.getElementById('odm_html').addEventListener('click', function () {
+            odm.show({ title: 'feegeg', html: 'Sed efficitur ac enim at dictum. Sed hendrerit vulputate imperdiet. Quisque ultricies tortor eget felis molestie eleifend. Donec ut vulputate mauris. Nulla libero odio, condimentum ut efficitur ac, porta id lacus. Vivamus dictum tortor in ultrices vehicula. Integer sed tortor tincidunt, laoreet est eget, porta enim. Duis venenatis libero sit amet leo sodales sollicitudin.' });
+        });
+        document.getElementById('odm_object').addEventListener('click', function () {
+            const divEle = document.querySelector('#text_place #text_content');
+            odm.show({
+                title: 'DOM object',
+                html: divEle,
+                onHide: function () { document.getElementById('text_place').append(divEle); }
+            });
+        });
+        document.getElementById('odm_iframe').addEventListener('click', function () {
+            odm.show({ title: 'feegeg', iframe: 'http://localhost/' });
+        });
+        document.getElementById('odm_iframe_buttons').addEventListener('click', function () {
+            odm.show({
+                title: 'Iframe + buttons',
+                iframe: 'http://localhost/',
+                buttons: [{ label: 'test', callback: function () { alert('test'); } }]
+            });
+        });
+        document.getElementById('odm_locked').addEventListener('click', function () {
+            odm.show({
+                image: '4.jpg',
+                title: 'Locked overlay',
+                locked: true,
+                buttons: [{ label: 'close', close: true }],
+                onHide: function () { console.log('Locked overlay closed.'); }
+            });
+        });
+        document.getElementById('odm_show').addEventListener('click', function () {
+            odm.show();
+        });
+        document.getElementById('odm_lang').addEventListener('change', function (event) {
+            odm.setLanguage(event.target.value);
+            odmInSubDiv.setLanguage(event.target.value);
+        });
+        odm.setLanguage(document.getElementById('odm_lang').value);
+        odmInSubDiv.setLanguage(document.getElementById('odm_lang').value);
+        document.getElementById('odm_in_sub_div_place').addEventListener('click', function () {
+            odmInSubDiv.show('1.jpg');
+        });
+        document.getElementById('odm_in_sub_div_place_with_iframe').addEventListener('click', function () {
+            odmInSubDiv.show({
+                title: 'Iframe + buttons',
+                iframe: 'http://localhost/',
+                buttons: [{ label: 'test', callback: function () { alert('test'); } }]
+            });
+        });
+
+        window.addEventListener('keydown', function (event) {
+            var key = event.keyCode || event.which;
+            if (key == 48)
+                document.getElementById('odm_imgchange').click();
+            else if (key == 49)
+                document.getElementById('odm_img').click();
+            else if (key == 50)
+                document.getElementById('odm_html').click();
+            else if (key == 51)
+                document.getElementById('odm_img404').click();
+            else if (key == 52)
+                document.getElementById('odm_imgs').click();
+            //else
+            //    console.log('key pressed:', key);
+        });
+    </script>
 </body>
 </html>
 
