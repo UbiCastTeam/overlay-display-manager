@@ -44,6 +44,7 @@
         <button type="button" id="odm_iframe_buttons">Iframe content with buttons</button>
         <button type="button" id="odm_locked">Locked (only closable by callback)</button>
         <button type="button" id="odm_show">Show</button>
+        <button type="button" id="odm_steal">Steal displayed element</button>
         <button type="button" id="odm_in_sub_div_place">Show in sub element</button>
         <button type="button" id="odm_in_sub_div_place_with_iframe">Show iframe in sub element</button>
         <select id="odm_lang">
@@ -136,6 +137,11 @@ Sed commodo tellus nibh, eget varius ipsum malesuada eu. Etiam lobortis rhoncus 
         });
         odm.setLanguage(document.getElementById('odm_lang').value);
         odmInSubDiv.setLanguage(document.getElementById('odm_lang').value);
+        document.getElementById('odm_steal').addEventListener('click', function () {
+            if (odm.displayedElement && odm.displayedElement.parentElement) {
+                odm.displayedElement.parentElement.removeChild(odm.displayedElement);
+            }
+        });
         document.getElementById('odm_in_sub_div_place').addEventListener('click', function () {
             odmInSubDiv.show('1.jpg');
         });

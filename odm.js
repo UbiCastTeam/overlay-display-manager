@@ -25,6 +25,7 @@ function OverlayDisplayManager (options) {
     this.maxWidth = 0;
     this.maxHeight = 0;
     this.image = null;
+    this.elementPlace = null;
     this.displayed = false;
     this.displayedElement = null;
     this.elementPaddingDisplayed = false;
@@ -102,6 +103,7 @@ OverlayDisplayManager.prototype._init = function () {
     '</div>' +
     '<div class="odm-closer" tabindex="0"></div>';
     document.querySelector(this.overlaySelectorPlace).appendChild(this.widget);
+    this.elementPlace = this.widget.querySelector('.odm-element-content');
 
     // bind events
     const obj = this;
@@ -256,11 +258,15 @@ OverlayDisplayManager.prototype.setLanguage = function (lang) {
 };
 
 OverlayDisplayManager.prototype.onResize = function () {
+    let dpEle;
+    if (this.displayedElement && this.displayedElement.parentElement == this.elementPlace) {
+        dpEle = this.displayedElement;
+    }
     let emFactor = 15;
-    if (this.displayedElement) {
+    if (dpEle) {
         try {
             // get number of px of one em
-            const fontSize = window.getComputedStyle(this.widget.querySelector('.odm-element')).getPropertyValue('fontSize');
+            const fontSize = window.getComputedStyle(dpEle).getPropertyValue('fontSize');
             if (fontSize.indexOf('px') > 0) {
                 emFactor = parseFloat(fontSize.replace(/[^0-9.]+/g,''));
             }
@@ -285,12 +291,12 @@ OverlayDisplayManager.prototype.onResize = function () {
         this.maxHeight = window.innerHeight - (heightUsed * emFactor);
     }
     const padding = this.elementPaddingDisplayed ? this.elementPadding * emFactor : 0;
-    if (this.displayedElement) {
+    if (dpEle) {
         if (this.maxWidth > 0) {
-            this.widget.querySelector('.odm-element').style.setProperty('max-width', (this.maxWidth - padding) + 'px');
+            dpEle.style.setProperty('max-width', (this.maxWidth - padding) + 'px');
         }
         if (this.maxHeight > 0) {
-            this.widget.querySelector('.odm-element').style.setProperty('max-height', (this.maxHeight - padding) + 'px');
+            dpEle.style.setProperty('max-height', (this.maxHeight - padding) + 'px');
         }
     }
 };
@@ -477,7 +483,11 @@ OverlayDisplayManager.prototype._loadResource = function (resource) {
 
 // Main functions
 OverlayDisplayManager.prototype.change = function (params) {
-    if (!this.widget || !params) {
+    if (!params) {
+        return;
+    }
+    if (!this.widget) {
+        this.pendingShowParams = params;
         return;
     }
 
@@ -507,6 +517,8 @@ OverlayDisplayManager.prototype.show = function (params) {
     }
     if (resource) {
         this._loadResource(resource);
+    } else {
+        this._refreshElement();
     }
     if (this.noFixed) {
         const scrollY = window.scrollY !== undefined ? window.scrollY : 0;
@@ -589,9 +601,9 @@ OverlayDisplayManager.prototype.previous = function () {
 
 // Element display
 OverlayDisplayManager.prototype._displayElement = function (element, padding) {
-    const elementPlace = this.widget.querySelector('.odm-element-content');
+    const elementPlace = this.elementPlace;
     // hide previous element
-    if (this.displayedElement) {
+    if (this.displayedElement && this.displayedElement != element) {
         const previous = this.displayedElement;
         const hidePrevious = function () {
             if (previous.parentElement == elementPlace) {
@@ -612,9 +624,12 @@ OverlayDisplayManager.prototype._displayElement = function (element, padding) {
     // show new element
     this.elementPaddingDisplayed = Boolean(padding);
     this.displayedElement = element;
-    if (element) {
+    if (element && element.parentElement != elementPlace) {
         elementPlace.appendChild(element);
     }
+};
+OverlayDisplayManager.prototype._refreshElement = function () {
+    this._displayElement(this.displayedElement, this.elementPaddingDisplayed);
 };
 
 // Error and loading management
@@ -722,11 +737,13 @@ OverlayDisplayManager.prototype._loadHTML = function (resource, callback) {
     if (typeof resource.html === 'string') {
         htEle = document.createElement('div');
         htEle.innerHTML = resource.html;
-    } else if ('detach' in resource.html) {
-        // jquery element
-        htEle = resource.html.detach();
     } else {
-        htEle = resource.html;
+        if ('detach' in resource.html) {
+            // jquery element
+            htEle = resource.html[0];
+        } else {
+            htEle = resource.html;
+        }
         if (htEle.parentElement) {
             htEle.parentElement.removeChild(htEle);
         }
