@@ -1,4 +1,9 @@
 /* Overlay display manager stylesheet */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 .odm-main,
 .odm-main .odm-layer,
 .odm-main .odm-closer {
@@ -149,12 +154,24 @@
 }
 .odm-main .odm-hover-loading div {
     padding: 8px 16px;
-    padding-left: 52px;
     line-height: 32px;
     color: #ccc;
     font-size: 0.9em;
     font-weight: bold;
-    background: transparent url("img/loading_small.gif") 8px 50% no-repeat;
+}
+.odm-main .odm-hover-loading div:before {
+    margin-right: 0.2em;
+    content: " ";
+    font-size: 4em;
+    font-weight: bold;
+    display: inline-block;
+    vertical-align: middle;
+    border: 0.1em solid #888;
+    border-top: 0.1em solid #eee;
+    border-radius: 50%;
+    width: 0.5em;
+    height: 0.5em;
+    animation: spin 2s linear infinite;
 }
 .odm-main .odm-element-content {
     position: relative;
@@ -195,23 +212,33 @@
 /* loading and error */
 .odm-main div.odm-element.odm-error,
 .odm-main div.odm-element.odm-loading {
+    padding: 45px;
     background: transparent;
     color: #ccc;
     font-weight: bold;
     font-size: 1.3em;
     transition: none;
 }
-.odm-main div.odm-element.odm-error {
-    padding: 45px;
-    padding-left: 110px;
-    padding-right: 30px;
-    background: transparent url("img/warning.png") 30px 50% no-repeat;
+.odm-main div.odm-element.odm-error:before,
+.odm-main div.odm-element.odm-loading:before {
+    margin-right: 0.2em;
+    font-size: 4em;
+    font-weight: bold;
+    display: inline-block;
+    vertical-align: middle;
 }
-.odm-main div.odm-element.odm-loading {
-    padding: 45px;
-    padding-left: 110px;
-    padding-right: 30px;
-    background: transparent url("img/loading.gif") 30px 50% no-repeat;
+.odm-main div.odm-element.odm-error:before {
+    content: "⚠";
+    color: #fa2;
+}
+.odm-main div.odm-element.odm-loading:before {
+    content: " ";
+    border: 0.1em solid #888;
+    border-top: 0.1em solid #eee;
+    border-radius: 50%;
+    width: 0.5em;
+    height: 0.5em;
+    animation: spin 2s linear infinite;
 }
 
 /* previous and next buttons */
@@ -224,9 +251,15 @@
     position: absolute;
     width: 181px;
     display: none;
+    text-align: center;
+    line-height: 4em;
     cursor: pointer;
     overflow: hidden;
-    background-color: rgba(0, 0, 0, 0); /* to avoid IE bug */
+    background: transparent;
+    border: 0 none;
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
 }
 .odm-main .odm-previous {
     right: auto;
@@ -234,7 +267,8 @@
 .odm-main .odm-next {
     left: auto;
 }
-.odm-main .odm-btn-bg {
+.odm-main .odm-previous span,
+.odm-main .odm-next span {
     margin-top: -80px;
     padding: 32px 0;
     left: 0;
@@ -242,41 +276,39 @@
     top: 50%;
     position: absolute;
     border: 1px solid #666;
+    color: #ccc;
     background: rgba(0, 0, 0, 0.7);
     display: none;
 }
-.odm-main .odm-previous .odm-btn-bg {
-    right: 60px;
+.odm-main .odm-previous:hover span,
+.odm-main .odm-next:hover span {
+    display: block;
 }
-.odm-main .odm-next .odm-btn-bg {
-    left: 60px;
-}
-.odm-main .odm-previous .odm-btn-bg {
+.odm-main .odm-previous span {
     right: 60px;
     border-left: 0 none;
     border-top-right-radius: 0.35em;
     border-bottom-right-radius: 0.35em;
 }
-.odm-main .odm-next .odm-btn-bg {
+.odm-main .odm-next span {
     left: 60px;
     border-right: 0 none;
     border-top-left-radius: 0.35em;
     border-bottom-left-radius: 0.35em;
 }
-.odm-main .odm-previous .odm-btn-icon,
-.odm-main .odm-next .odm-btn-icon {
-    padding-top: 74px;
-    color: #ccc;
-    font-size: 0.9em;
-    text-align: center;
-}
-.odm-main .odm-previous:hover .odm-btn-bg,
-.odm-main .odm-next:hover .odm-btn-bg {
+.odm-main .odm-previous i,
+.odm-main .odm-previous b,
+.odm-main .odm-next i,
+.odm-main .odm-next b {
+    font-style: normal;
+    font-weight: bold;
     display: block;
 }
-.odm-main .odm-previous .odm-btn-icon {
-    background: transparent url("img/previous.png") 50% 0 no-repeat;
+.odm-main .odm-previous i,
+.odm-main .odm-next i {
+    font-size: 6em;
 }
-.odm-main .odm-next .odm-btn-icon {
-    background: transparent url("img/next.png") 50% 0 no-repeat;
+.odm-main .odm-previous b,
+.odm-main .odm-next b {
+    font-size: 1.5em;
 }

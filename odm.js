@@ -94,10 +94,10 @@ OverlayDisplayManager.prototype._init = function () {
                 '<div class="odm-bottom-bar">' +
                     '<div class="odm-buttons"></div>' +
                 '</div>' +
-                '<div class="odm-previous"><div class="odm-btn-bg">' +
-                    '<div class="odm-btn-icon">' + this.messages.previous + '</div></div></div>' +
-                '<div class="odm-next"><div class="odm-btn-bg">' +
-                    '<div class="odm-btn-icon">' + this.messages.next + '</div></div></div>' +
+                '<button type="button" class="odm-previous"><span>' +
+                    '<i>←</i><b>' + this.messages.previous + '</b></span></button>' +
+                '<button type="button" class="odm-next"><span>' +
+                    '<i>→</i><b>' + this.messages.next + '</b></span></button>' +
             '</div>' +
         '</td></tr></table>' +
     '</div>' +
@@ -251,9 +251,9 @@ OverlayDisplayManager.prototype.setLanguage = function (lang) {
         // replace messages
         this.widget.querySelector('.odm-close').setAttribute('title', this.messages.close);
         this.widget.querySelector('.odm-close').setAttribute('aria-label', this.messages.close);
-        this.widget.querySelector('.odm-hover-loading').innerHTML = this.messages.loading;
-        this.widget.querySelector('.odm-previous .odm-btn-icon').innerHTML = this.messages.previous;
-        this.widget.querySelector('.odm-next .odm-btn-icon').innerHTML = this.messages.next;
+        this.widget.querySelector('.odm-hover-loading div').innerHTML = this.messages.loading;
+        this.widget.querySelector('.odm-previous b').innerHTML = this.messages.previous;
+        this.widget.querySelector('.odm-next b').innerHTML = this.messages.next;
     }
 };
 
@@ -303,7 +303,7 @@ OverlayDisplayManager.prototype.onResize = function () {
 
 OverlayDisplayManager.prototype._setResources = function (params) {
     // reset content
-    if (!this.displayed) {
+    if (this.widget && !this.displayed) {
         this.loadingDisplayed = true;
         const loadingEle = document.createElement('div');
         loadingEle.setAttribute('class', 'odm-element odm-loading');
@@ -330,31 +330,35 @@ OverlayDisplayManager.prototype._setResources = function (params) {
         if (params.index && params.index > 0 && params.index < params.length) {
             this.currentIndex = params.index;
         }
-        this.widget.querySelector('.odm-resources').innerHTML = (this.currentIndex + 1) + ' / ' + this.resources.length;
-        if (!this.topBarDisplayed) {
-            this.topBarDisplayed = true;
-            this.widget.classList.add('odm-top-bar-displayed');
-            this.onResize();
-        }
-        if (this.currentIndex > 0) {
-            this.widget.querySelector('.odm-previous').style.setProperty('display', 'block');
-        } else {
-            this.widget.querySelector('.odm-previous').style.setProperty('display', 'none');
-        }
-        if (this.currentIndex < this.resources.length - 1) {
-            this.widget.querySelector('.odm-next').style.setProperty('display', 'block');
-        } else {
-            this.widget.querySelector('.odm-next').style.setProperty('display', 'none');
+        if (this.widget) {
+            this.widget.querySelector('.odm-resources').innerHTML = (this.currentIndex + 1) + ' / ' + this.resources.length;
+            if (!this.topBarDisplayed) {
+                this.topBarDisplayed = true;
+                this.widget.classList.add('odm-top-bar-displayed');
+                this.onResize();
+            }
+            if (this.currentIndex > 0) {
+                this.widget.querySelector('.odm-previous').style.setProperty('display', 'block');
+            } else {
+                this.widget.querySelector('.odm-previous').style.setProperty('display', 'none');
+            }
+            if (this.currentIndex < this.resources.length - 1) {
+                this.widget.querySelector('.odm-next').style.setProperty('display', 'block');
+            } else {
+                this.widget.querySelector('.odm-next').style.setProperty('display', 'none');
+            }
         }
     } else {
-        if (this.topBarDisplayed && !this.title) {
-            this.topBarDisplayed = false;
-            this.widget.classList.remove('odm-top-bar-displayed');
-            this.onResize();
+        if (this.widget) {
+            if (this.topBarDisplayed && !this.title) {
+                this.topBarDisplayed = false;
+                this.widget.classList.remove('odm-top-bar-displayed');
+                this.onResize();
+            }
+            this.widget.querySelector('.odm-resources').innerHTML = '';
+            this.widget.querySelector('.odm-previous').style.setProperty('display', 'none');
+            this.widget.querySelector('.odm-next').style.setProperty('display', 'none');
         }
-        this.widget.querySelector('.odm-resources').innerHTML = '';
-        this.widget.querySelector('.odm-previous').style.setProperty('display', 'none');
-        this.widget.querySelector('.odm-next').style.setProperty('display', 'none');
     }
     return this.resources[this.currentIndex];
 };
@@ -484,10 +488,6 @@ OverlayDisplayManager.prototype._loadResource = function (resource) {
 // Main functions
 OverlayDisplayManager.prototype.change = function (params) {
     if (!params) {
-        return;
-    }
-    if (!this.widget) {
-        this.pendingShowParams = params;
         return;
     }
 
