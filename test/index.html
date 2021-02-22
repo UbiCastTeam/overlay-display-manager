@@ -9,8 +9,32 @@
     <script type="text/javascript" src="../odm.js"></script>
 
     <style>
-        body {
+        html {
+            background: #444;
+            color: #eee;
+            text-align: left;
             font-size: 0.9em;
+            font-family: Arial, sans-serif;
+        }
+        html, body {
+            margin: 0;
+        }
+        header {
+            padding: 0.1em 1em;
+            background: #222;
+            color: #fff;
+        }
+        main {
+            padding: 1em 2em;
+        }
+        img {
+            max-width: 100%;
+        }
+        a {
+            color: #28f;
+        }
+        fieldset {
+            margin: 1em 0;
         }
         button,
         select {
@@ -31,38 +55,45 @@
 </head>
 
 <body>
-    <div class="buttons">
-        <button type="button" id="odm_img">Mono image</button>
-        <button type="button" id="odm_imgs">Multi images</button>
-        <button type="button" id="odm_imgs404">Multi images with 404</button>
-        <button type="button" id="odm_imgchange">Change image</button>
-        <button type="button" id="odm_img404">404 image</button>
-        <button type="button" id="odm_img404title">404 image with title</button>
-        <button type="button" id="odm_html">HTML content</button>
-        <button type="button" id="odm_object">Object content</button>
-        <button type="button" id="odm_iframe">Iframe content</button>
-        <button type="button" id="odm_iframe_buttons">Iframe content with buttons</button>
-        <button type="button" id="odm_locked">Locked (only closable by callback)</button>
-        <button type="button" id="odm_show">Show</button>
-        <button type="button" id="odm_steal">Steal displayed element</button>
-        <button type="button" id="odm_in_sub_div_place">Show in sub element</button>
-        <button type="button" id="odm_in_sub_div_place_with_iframe">Show iframe in sub element</button>
-        <select id="odm_lang">
-            <option value="en">Language: en</option>
-            <option value="fr">Language: fr</option>
-        </select>
-    </div>
+    <header>
+        <h1><a href="https://github.com/UbiCastTeam/overlay-display-manager">Overlay displayer manager test page</a></h1>
+        <p>Version: <span id="version"></span></p>
+    </header>
 
-    <ul>Keyboard tests:
-        <li>0: Change image</li>
-        <li>1: Mono image</li>
-        <li>2: HTML content</li>
-        <li>3: 404 image</li>
-        <li>4: Multi images</li>
-    </ul>
+    <main>
+        <div class="buttons">
+            <button type="button" id="odm_img">Mono image</button>
+            <button type="button" id="odm_imgs">Multi images</button>
+            <button type="button" id="odm_imgs404">Multi images with 404</button>
+            <button type="button" id="odm_imgchange">Change image</button>
+            <button type="button" id="odm_img404">404 image</button>
+            <button type="button" id="odm_img404title">404 image with title</button>
+            <button type="button" id="odm_html">HTML content</button>
+            <button type="button" id="odm_object">Object content</button>
+            <button type="button" id="odm_iframe">Iframe content</button>
+            <button type="button" id="odm_iframe_buttons">Iframe content with buttons</button>
+            <button type="button" id="odm_locked">Locked (only closable by callback)</button>
+            <button type="button" id="odm_show">Show</button>
+            <button type="button" id="odm_steal">Steal displayed element</button>
+            <button type="button" id="odm_in_sub_div_place">Show in sub element</button>
+            <button type="button" id="odm_in_sub_div_place_with_iframe">Show iframe in sub element</button>
+            <button type="button" id="odm_z_test">Overlay with lower z index</button>
+            <select id="odm_lang">
+                <option value="en">Language: en</option>
+                <option value="fr">Language: fr</option>
+            </select>
+        </div>
 
-    <div id="text_place">
-        <div id="text_content">
+        <ul>Keyboard tests:
+            <li>0: Change image</li>
+            <li>1: Mono image</li>
+            <li>2: HTML content</li>
+            <li>3: 404 image</li>
+            <li>4: Multi images</li>
+        </ul>
+
+        <div id="text_place">
+            <div id="text_content">
 <p><b>Some text used to test object management</b></p>
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque nec aliquam tellus. Suspendisse potenti. Pellentesque pharetra lectus sed nisl egestas, sed laoreet mi vestibulum. In ullamcorper purus sed blandit laoreet. Suspendisse eleifend feugiat sodales. Quisque suscipit ultrices luctus. Mauris lacinia pulvinar metus. Sed odio massa, feugiat ac dolor sed, euismod porta eros. Duis sodales interdum nisl, non rhoncus orci tempus convallis. Ut vitae interdum eros, in lacinia enim.
 
@@ -74,101 +105,111 @@ Integer sodales vitae mauris at convallis. Nam elementum ac enim in pharetra. Se
 
 Sed commodo tellus nibh, eget varius ipsum malesuada eu. Etiam lobortis rhoncus sodales. Morbi malesuada, mauris at sollicitudin sollicitudin, velit lacus tempor elit, eu pretium tellus lacus eleifend est. Nulla facilisi. Ut vehicula dolor eu aliquam rutrum. Integer sed mauris sed dolor luctus convallis. Nullam id dui commodo, vestibulum odio sit amet, sagittis metus. In aliquam lacinia nisl, eget commodo neque egestas a. Nunc in ligula quis nisl tristique vehicula ac nec enim. Vivamus luctus, massa at tristique porttitor, sapien massa fringilla risus, a tempus elit eros ut augue. Mauris egestas augue eros, a eleifend eros varius in. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Cras malesuada ac urna at sollicitudin. Donec fermentum lectus in vestibulum efficitur. Vestibulum porttitor dictum dui id feugiat.</p>
 <p><button type="button">Test button for focus</button></p>
+            </div>
         </div>
-    </div>
 
-    <script type="text/javascript">
-        var odm = new OverlayDisplayManager();
-        var odmInSubDiv = new OverlayDisplayManager({'overlaySelectorPlace': '#text_place'});
-        document.getElementById('odm_img').addEventListener('click', function () {
-            odm.show('1.jpg');
-        });
-        document.getElementById('odm_imgs').addEventListener('click', function () {
-            odm.show(['1.jpg', '2.jpg', '3.jpg', '4.jpg']);
-        });
-        document.getElementById('odm_imgs404').addEventListener('click', function () {
-            odm.show(['1.jpg', '2.jpg', '404.jpg', '3.jpg', '4.jpg']);
-        });
-        document.getElementById('odm_imgchange').addEventListener('click', function () {
-            odm.change('3.jpg');
-        });
-        document.getElementById('odm_img404').addEventListener('click', function () {
-            odm.show('404.jpg');
-        });
-        document.getElementById('odm_img404title').addEventListener('click', function () {
-            odm.show({ image: '404.jpg', title: '404' });
-        });
-        document.getElementById('odm_html').addEventListener('click', function () {
-            odm.show({ title: 'feegeg', html: 'Sed efficitur ac enim at dictum. Sed hendrerit vulputate imperdiet. Quisque ultricies tortor eget felis molestie eleifend. Donec ut vulputate mauris. Nulla libero odio, condimentum ut efficitur ac, porta id lacus. Vivamus dictum tortor in ultrices vehicula. Integer sed tortor tincidunt, laoreet est eget, porta enim. Duis venenatis libero sit amet leo sodales sollicitudin.' });
-        });
-        document.getElementById('odm_object').addEventListener('click', function () {
-            const divEle = document.querySelector('#text_place #text_content');
-            odm.show({
-                title: 'DOM object',
-                html: divEle,
-                onHide: function () { document.getElementById('text_place').append(divEle); }
-            });
-        });
-        document.getElementById('odm_iframe').addEventListener('click', function () {
-            odm.show({ title: 'feegeg', iframe: 'http://localhost/' });
-        });
-        document.getElementById('odm_iframe_buttons').addEventListener('click', function () {
-            odm.show({
-                title: 'Iframe + buttons',
-                iframe: 'http://localhost/',
-                buttons: [{ label: 'test', callback: function () { alert('test'); } }]
-            });
-        });
-        document.getElementById('odm_locked').addEventListener('click', function () {
-            odm.show({
-                image: '4.jpg',
-                title: 'Locked overlay',
-                locked: true,
-                buttons: [{ label: 'close', close: true }],
-                onHide: function () { console.log('Locked overlay closed.'); }
-            });
-        });
-        document.getElementById('odm_show').addEventListener('click', function () {
-            odm.show();
-        });
-        document.getElementById('odm_lang').addEventListener('change', function (event) {
-            odm.setLanguage(event.target.value);
-            odmInSubDiv.setLanguage(event.target.value);
-        });
-        odm.setLanguage(document.getElementById('odm_lang').value);
-        odmInSubDiv.setLanguage(document.getElementById('odm_lang').value);
-        document.getElementById('odm_steal').addEventListener('click', function () {
-            if (odm.displayedElement && odm.displayedElement.parentElement) {
-                odm.displayedElement.parentElement.removeChild(odm.displayedElement);
-            }
-        });
-        document.getElementById('odm_in_sub_div_place').addEventListener('click', function () {
-            odmInSubDiv.show('1.jpg');
-        });
-        document.getElementById('odm_in_sub_div_place_with_iframe').addEventListener('click', function () {
-            odmInSubDiv.show({
-                title: 'Iframe + buttons',
-                iframe: 'http://localhost/',
-                buttons: [{ label: 'test', callback: function () { alert('test'); } }]
-            });
-        });
+        <script type="text/javascript">
+            document.getElementById('version').innerHTML = OverlayDisplayManager.version;
 
-        window.addEventListener('keydown', function (event) {
-            var key = event.keyCode || event.which;
-            if (key == 48)
-                document.getElementById('odm_imgchange').click();
-            else if (key == 49)
-                document.getElementById('odm_img').click();
-            else if (key == 50)
-                document.getElementById('odm_html').click();
-            else if (key == 51)
-                document.getElementById('odm_img404').click();
-            else if (key == 52)
-                document.getElementById('odm_imgs').click();
-            //else
-            //    console.log('key pressed:', key);
-        });
-    </script>
+            const odm = new OverlayDisplayManager();
+            const odmInSubDiv = new OverlayDisplayManager({'overlaySelectorPlace': '#text_place'});
+            document.getElementById('odm_img').addEventListener('click', function () {
+                odm.show('1.jpg');
+            });
+            document.getElementById('odm_imgs').addEventListener('click', function () {
+                odm.show(['1.jpg', '2.jpg', '3.jpg', '4.jpg']);
+            });
+            document.getElementById('odm_imgs404').addEventListener('click', function () {
+                odm.show(['1.jpg', '2.jpg', '404.jpg', '3.jpg', '4.jpg']);
+            });
+            document.getElementById('odm_imgchange').addEventListener('click', function () {
+                odm.change('3.jpg');
+            });
+            document.getElementById('odm_img404').addEventListener('click', function () {
+                odm.show('404.jpg');
+            });
+            document.getElementById('odm_img404title').addEventListener('click', function () {
+                odm.show({ image: '404.jpg', title: '404' });
+            });
+            document.getElementById('odm_html').addEventListener('click', function () {
+                odm.show({ title: 'feegeg', html: 'Sed efficitur ac enim at dictum. Sed hendrerit vulputate imperdiet. Quisque ultricies tortor eget felis molestie eleifend. Donec ut vulputate mauris. Nulla libero odio, condimentum ut efficitur ac, porta id lacus. Vivamus dictum tortor in ultrices vehicula. Integer sed tortor tincidunt, laoreet est eget, porta enim. Duis venenatis libero sit amet leo sodales sollicitudin.' });
+            });
+            document.getElementById('odm_object').addEventListener('click', function () {
+                const divEle = document.querySelector('#text_place #text_content');
+                odm.show({
+                    title: 'DOM object',
+                    html: divEle,
+                    onHide: function () { document.getElementById('text_place').append(divEle); }
+                });
+            });
+            document.getElementById('odm_iframe').addEventListener('click', function () {
+                odm.show({ title: 'feegeg', iframe: 'http://localhost/' });
+            });
+            document.getElementById('odm_iframe_buttons').addEventListener('click', function () {
+                odm.show({
+                    title: 'Iframe + buttons',
+                    iframe: 'http://localhost/',
+                    buttons: [{ label: 'test', callback: function () { alert('test'); } }]
+                });
+            });
+            document.getElementById('odm_locked').addEventListener('click', function () {
+                odm.show({
+                    image: '4.jpg',
+                    title: 'Locked overlay',
+                    locked: true,
+                    buttons: [{ label: 'close', close: true }],
+                    onHide: function () { console.log('Locked overlay closed.'); }
+                });
+            });
+            document.getElementById('odm_show').addEventListener('click', function () {
+                odm.show();
+            });
+            document.getElementById('odm_lang').addEventListener('change', function (event) {
+                odm.setLanguage(event.target.value);
+                odmInSubDiv.setLanguage(event.target.value);
+            });
+            odm.setLanguage(document.getElementById('odm_lang').value);
+            odmInSubDiv.setLanguage(document.getElementById('odm_lang').value);
+            document.getElementById('odm_steal').addEventListener('click', function () {
+                if (odm.displayedElement && odm.displayedElement.parentElement) {
+                    odm.displayedElement.parentElement.removeChild(odm.displayedElement);
+                }
+            });
+            document.getElementById('odm_in_sub_div_place').addEventListener('click', function () {
+                odmInSubDiv.show('1.jpg');
+            });
+            document.getElementById('odm_in_sub_div_place_with_iframe').addEventListener('click', function () {
+                odmInSubDiv.show({
+                    title: 'Iframe + buttons',
+                    iframe: 'http://localhost/',
+                    buttons: [{ label: 'test', callback: function () { alert('test'); } }]
+                });
+            });
+            document.getElementById('odm_z_test').addEventListener('click', function () {
+                if (!window.odmZtest) {
+                    window.odmZtest = new OverlayDisplayManager({'zIndex': 40});
+                }
+                window.odmZtest.show('1.jpg');
+            });
+
+            window.addEventListener('keydown', function (event) {
+                const key = event.keyCode || event.which;
+                if (key == 48) {
+                    document.getElementById('odm_imgchange').click();
+                } else if (key == 49) {
+                    document.getElementById('odm_img').click();
+                } else if (key == 50) {
+                    document.getElementById('odm_html').click();
+                } else if (key == 51) {
+                    document.getElementById('odm_img404').click();
+                } else if (key == 52) {
+                    document.getElementById('odm_imgs').click();
+                } else {
+                    // console.log('key pressed:', key);
+                }
+            });
+        </script>
+    </main>
 </body>
 </html>
 

@@ -7,6 +7,18 @@
 
 
 function OverlayDisplayManager (options) {
+    const allowedOptions = [
+        'id',
+        'language',
+        'defaultButtonsClass',
+        'overlaySelectorPlace',
+        'hideOnEscape',
+        'margin',
+        'elementPadding',
+        'topBarHeight',
+        'bottomBarHeight',
+        'zIndex'
+    ];
     // params
     this.id = 1;
     this.language = 'en';
@@ -18,6 +30,7 @@ function OverlayDisplayManager (options) {
     this.elementPadding = 1;
     this.topBarHeight = 1.75;
     this.bottomBarHeight = 2;
+    this.zIndex = null;
 
     // vars
     this.pendingShowParams = null;
@@ -49,7 +62,11 @@ function OverlayDisplayManager (options) {
     if (options) {
         let attr;
         for (attr in options) {
-            this[attr] = options[attr];
+            if (allowedOptions.indexOf(attr) < 0) {
+                console.error('Unknown attribute given to OverlayDisplayManager: ' + attr);
+            } else {
+                this[attr] = options[attr];
+            }
         }
     }
     this.setLanguage(this.language);
@@ -62,6 +79,7 @@ function OverlayDisplayManager (options) {
     }
     window.addEventListener('resize', this.onResize.bind(this));
 }
+OverlayDisplayManager.version = 2;
 
 OverlayDisplayManager.prototype._init = function () {
     if (!isNaN(this.id)) {
@@ -81,10 +99,14 @@ OverlayDisplayManager.prototype._init = function () {
     this.widget = document.createElement('div');
     this.widget.setAttribute('id', 'odm_' + this.id);
     this.widget.setAttribute('class', 'odm-main ' + extraClass);
+    if (this.zIndex) {
+        this.widget.setAttribute('style', 'z-index:' + this.zIndex);
+    }
     this.widget.innerHTML = '<div class="odm-layer" tabindex="0">' +
         '<table class="odm-table" role="presentation"><tr class="odm-table"><td class="odm-table">' +
             '<div role="dialog" tabindex="-1" aria-labelledby="odm_title_' + this.id + '" aria-modal="true" class="odm-block">' +
-                '<button type="button" class="odm-close" title="' + this.messages.close + '" aria-label="' + this.messages.close + '"><i aria-hidden="true">X</i></button>' +
+                '<button type="button" class="odm-close" title="' + this.messages.close + '" aria-label="' + this.messages.close + '">' +
+                    '<i aria-hidden="true">X</i></button>' +
                 '<div class="odm-top-bar">' +
                     '<div class="odm-resources"></div>' +
                     '<h1 id="odm_title_' + this.id + '" class="odm-title"></h1>' +
