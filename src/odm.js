@@ -79,7 +79,7 @@ function OverlayDisplayManager (options) {
     }
     window.addEventListener('resize', this.onResize.bind(this));
 }
-OverlayDisplayManager.version = 2;
+OverlayDisplayManager.version = 3;
 
 OverlayDisplayManager.prototype._init = function () {
     if (!isNaN(this.id)) {
@@ -400,7 +400,7 @@ OverlayDisplayManager.prototype._checkTitleDisplay = function (title) {
         return;
     }
 
-    this.widget.querySelector('.odm-title').innerHTML = title;
+    this.widget.querySelector('.odm-title').textContent = title;
     this.title = title;
     const shouldDisplay = title || this.resources.length > 1;
     if (shouldDisplay && !this.topBarDisplayed) {
