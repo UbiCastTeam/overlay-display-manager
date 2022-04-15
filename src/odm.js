@@ -545,8 +545,12 @@ OverlayDisplayManager.prototype.show = function (params) {
         this._refreshElement();
     }
     if (this.noFixed) {
-        const scrollY = window.scrollY !== undefined ? window.scrollY : 0;
-        this.widget.querySelector('.odm-table').style.setProperty('margin-top', (scrollY + 10) + 'px');
+        if (this.overlaySelectorPlace != 'body') {
+            this.widget.querySelector('.odm-table').style.setProperty('margin-top', '10px');
+        } else {
+            const scrollY = window.scrollY !== undefined ? window.scrollY : 0;
+            this.widget.querySelector('.odm-table').style.setProperty('margin-top', (scrollY + 10) + 'px');
+        }
     }
     this.displayed = true;
     this.widget.style.setProperty('opacity', '0');
