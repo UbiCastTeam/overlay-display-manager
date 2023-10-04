@@ -91,14 +91,17 @@ OverlayDisplayManager.prototype._init = function () {
             this.id = 1;
         }
     }
-    let extraClass = '';
+    let extraClass = [];
     if (this.overlaySelectorPlace != 'body' || navigator.platform == 'iPad' || navigator.platform == 'iPhone' || navigator.platform == 'iPod') {
         this.noFixed = true;
-        extraClass = 'no-fixed';
+        extraClass.push('no-fixed');
+    }
+    if (window.odmConf && window.odmConf.extraCssClasses) {
+        extraClass = extraClass.concat(window.odmConf.extraCssClasses);
     }
     this.widget = document.createElement('div');
     this.widget.setAttribute('id', 'odm_' + this.id);
-    this.widget.setAttribute('class', 'odm-main ' + extraClass);
+    this.widget.setAttribute('class', 'odm-main ' + extraClass.join(' '));
     if (this.zIndex) {
         this.widget.setAttribute('style', 'z-index:' + this.zIndex);
     }
