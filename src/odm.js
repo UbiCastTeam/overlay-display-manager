@@ -159,18 +159,18 @@ OverlayDisplayManager.prototype._init = function () {
         if (!obj.displayed) {
             return;
         }
-        switch (event.keyCode) {
-            case 27:
+        switch (event.key) {
+            case 'Escape':
                 if (!obj.locked && obj.hideOnEscape) {
                     event.stopImmediatePropagation();
                     obj.hide();
                 }
                 break;
-            case 37:
+            case 'ArrowLeft':
                 event.stopImmediatePropagation();
                 obj.previous();
                 break;
-            case 39:
+            case 'ArrowRight':
                 event.stopImmediatePropagation();
                 obj.next();
                 break;

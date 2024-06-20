@@ -11,8 +11,8 @@
   "author": "",
   "license": "GPLv3",
   "dependencies": {
-    "eslint": "latest",
-    "gulp": "latest",
+    "eslint": "< 9",
+    "gulp": "< 5",
     "gulp-concat": "latest",
     "gulp-minify": "latest",
     "gulp-clean-css": "latest"
