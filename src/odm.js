@@ -289,7 +289,7 @@ OverlayDisplayManager.prototype._getElementPropertyPixelValue = function (elemen
         // ignore error and use default value
     }
     return 0;
-}
+};
 OverlayDisplayManager.prototype.onResize = function () {
     let widthUsed = 0;
     let heightUsed = 0;
