@@ -3,7 +3,17 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
-
+.odm-main {
+    --odm-block-container-color: #FBFBFB;
+    --odm-block-on-container-color: #161616;
+    --odm-close-hover-color: #EEEEEE;
+    --odm-block-radius: 28px;
+    --odm-main-container-color: rgba(0, 0, 0, 0.7);
+    --odm-main-on-container-color: #CCCCCC;
+    --odm-loading-buffer-color: #888888;
+    --odm-loading-track-color: #EEEEEE;
+    --odm-warning-icon-color: #FFAA22;
+}
 .odm-main,
 .odm-main .odm-layer,
 .odm-main .odm-closer {
@@ -21,7 +31,7 @@
 .odm-main {
     position: fixed;
     display: none;
-    background: rgba(0, 0, 0, 0.7);
+    background: var(--odm-main-container-color);
     z-index: 50;
     transition: opacity 0.3s linear 0s;
 }
@@ -34,6 +44,7 @@
     height: 100%;
     border-spacing: 0;
     border-collapse: collapse;
+    border-color: transparent;
 }
 .odm-main.no-fixed table.odm-table {
     height: auto;
@@ -50,38 +61,35 @@
     vertical-align: middle;
 }
 .odm-main .odm-block {
-    margin: 0;
-    padding: 0.25em;
+    margin: 8px;
     display: block;
     position: relative;
-    border: 1px solid #666;
-    background: #222;
+    color: var(--odm-block-on-container-color);
+    background: var(--odm-block-container-color);
     overflow: hidden;
     z-index: 45;
-    border-radius: 0.25em;
+    border-radius: var(--odm-block-radius);
 }
 
 /* close button */
 .odm-main .odm-close {
     margin: 0;
-    padding: 0;
-    top: 0;
-    right: 0;
+    padding: .3em;
+    top: 11px;
+    right: 11px;
     position: absolute;
     display: block;
-    background: #444;
     border: none;
-    border-radius: 0;
-    border-bottom-left-radius: 0.25em;
+    border-radius: 100%;
     font-size: inherit;
     z-index: 1;
 }
 .odm-main .odm-close:hover {
-    background: #666;
+    cursor: pointer;
 }
 .odm-main .odm-close i {
     padding: 0 0.3em;
-    color: white;
+    color: var(--odm-block-on-container-color);
     line-height: 1.2em;
     font-size: 1.8em;
     font-weight: bold;
@@ -94,13 +102,12 @@
 .odm-main .odm-top-bar .odm-title {
     padding: 0;
     margin: 0;
-    font-size: 1em;
+    font-size: 1.5em;
 }
 .odm-main .odm-top-bar {
-    padding-bottom: 0.25em;
-    padding-left: 0.25em;
-    padding-right: 2.25em;
-    color: #ddd;
+    padding: 16px 24px;
+    padding-bottom: 8px;
+    padding-right: 34px;
     height: 1.5em;
     line-height: 1.5em;
     font-size: 1.1em;
@@ -112,14 +119,14 @@
     display: block;
 }
 .odm-main .odm-top-bar .odm-resources {
-    margin-left: 0.25em;
+    margin-right: 1.5em;
     float: right;
     display: block;
 }
 /* bottom-bar */
 .odm-main .odm-bottom-bar {
-    padding-top: 0.25em;
-    color: #ddd;
+    padding: 16px 24px;
+    padding-top: 8px;
     text-align: right;
     display: none;
 }
@@ -138,15 +145,14 @@
 .odm-main .odm-element-place {
     position: relative;
     overflow: hidden;
-    border-radius: 0.2em;
+    padding: 8px 24px;
 }
 .odm-main .odm-hover-loading {
     top: 20px;
     left: 20px;
     position: absolute;
     display: none;
-    border: 1px solid #666;
-    background: rgba(0, 0, 0, 0.7);
+    background: var(--odm-main-container-color);
     border-radius: 0.35em;
 }
 .odm-main.odm-hover-loading-displayed .odm-hover-loading {
@@ -155,7 +161,7 @@
 .odm-main .odm-hover-loading div {
     padding: 8px 16px;
     line-height: 32px;
-    color: #ccc;
+    color: var(--odm-main-on-container-color);
     font-size: 0.9em;
     font-weight: bold;
 }
@@ -166,8 +172,8 @@
     font-weight: bold;
     display: inline-block;
     vertical-align: middle;
-    border: 0.1em solid #888;
-    border-top: 0.1em solid #eee;
+    border: 0.1em solid var(--odm-loading-buffer-color);
+    border-top: 0.1em solid var(--odm-loading-track-color);
     border-radius: 50%;
     width: 0.5em;
     height: 0.5em;
@@ -196,15 +202,9 @@
     vertical-align: top;
 }
 .odm-main div.odm-element,
-.odm-main form.odm-element {
-    padding: 0.5em;
-}
-.odm-main div.odm-element,
 .odm-main form.odm-element,
 .odm-main iframe.odm-element {
     margin: 0;
-    background: #fff;
-    color: #000;
     text-align: left;
     overflow: auto;
 }
@@ -213,8 +213,6 @@
 .odm-main div.odm-element.odm-error,
 .odm-main div.odm-element.odm-loading {
     padding: 45px;
-    background: transparent;
-    color: #ccc;
     font-weight: bold;
     font-size: 1.3em;
     transition: none;
@@ -229,12 +227,12 @@
 }
 .odm-main div.odm-element.odm-error:before {
     content: "⚠";
-    color: #fa2;
+    color: var(--odm-warning-icon-color);
 }
 .odm-main div.odm-element.odm-loading:before {
     content: " ";
-    border: 0.1em solid #888;
-    border-top: 0.1em solid #eee;
+    border: 0.1em solid var(--odm-loading-buffer-color);
+    border-top: 0.1em solid var(--odm-loading-track-color);
     border-radius: 50%;
     width: 0.5em;
     height: 0.5em;
@@ -275,9 +273,8 @@
     right: 0;
     top: 50%;
     position: absolute;
-    border: 1px solid #666;
-    color: #ccc;
-    background: rgba(0, 0, 0, 0.7);
+    color: var(--odm-main-on-container-color);
+    background: var(--odm-main-container-color);
     display: none;
 }
 .odm-main .odm-previous:hover span,

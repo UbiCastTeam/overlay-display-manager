@@ -14,9 +14,6 @@ function OverlayDisplayManager (options) {
         'overlaySelectorPlace',
         'hideOnEscape',
         'margin',
-        'elementPadding',
-        'topBarHeight',
-        'bottomBarHeight',
         'zIndex'
     ];
     // params
@@ -26,10 +23,6 @@ function OverlayDisplayManager (options) {
     this.overlaySelectorPlace = 'body';
     this.hideOnEscape = true;
     // size are in em unit
-    this.margin = 2;
-    this.elementPadding = 1;
-    this.topBarHeight = 1.75;
-    this.bottomBarHeight = 2;
     this.zIndex = null;
 
     // vars
@@ -42,7 +35,6 @@ function OverlayDisplayManager (options) {
     this.elementPlace = null;
     this.displayed = false;
     this.displayedElement = null;
-    this.elementPaddingDisplayed = false;
     this.topBarDisplayed = false;
     this.bottomBarDisplayed = false;
     this.displayMode = null;
@@ -283,47 +275,58 @@ OverlayDisplayManager.prototype.setLanguage = function (lang) {
         this.widget.querySelector('.odm-next b').innerHTML = this.messages.next;
     }
 };
-
-OverlayDisplayManager.prototype.onResize = function () {
-    let dpEle;
-    if (this.displayedElement && this.displayedElement.parentElement == this.elementPlace) {
-        dpEle = this.displayedElement;
+OverlayDisplayManager.prototype._getElementPropertyPixelValue = function (element, name) {
+    if (!element) {
+        return 0;
     }
-    let emFactor = 15;
-    if (dpEle) {
-        try {
-            // get number of px of one em
-            const fontSize = window.getComputedStyle(dpEle).getPropertyValue('fontSize');
-            if (fontSize.indexOf('px') > 0) {
-                emFactor = parseFloat(fontSize.replace(/[^0-9.]+/g,''));
-            }
-        } catch (e) {
-            // ignore error and use default value
+    try {
+        // get number of px of one em
+        const styleProperty = window.getComputedStyle(element).getPropertyValue(name);
+        if (styleProperty.indexOf('px') > 0) {
+            return parseFloat(styleProperty.replace(/[^0-9.]+/g,''));
         }
+    } catch (e) {
+        // ignore error and use default value
     }
-    const widthUsed = this.margin;
-    let heightUsed = this.margin;
+    return 0;
+}
+OverlayDisplayManager.prototype.onResize = function () {
+    let widthUsed = 0;
+    let heightUsed = 0;
+
+    const odmBlockElement = this.widget.querySelector('.odm-block');
+    const margin = this._getElementPropertyPixelValue(odmBlockElement, 'margin');
+    widthUsed = margin * 2;
+    heightUsed = margin * 2;
+
+    const elementPlace = this.widget.querySelector('.odm-block .odm-element-place');
+    const paddingLeft = this._getElementPropertyPixelValue(elementPlace, 'padding-left');
+    const paddingTop = this._getElementPropertyPixelValue(elementPlace, 'padding-top');
+    widthUsed += paddingLeft * 2;
+    heightUsed += paddingTop * 2;
+
     if (this.topBarDisplayed) {
-        heightUsed += this.topBarHeight;
+        const topBarElement = this.widget.querySelector('.odm-block .odm-top-bar');
+        heightUsed += topBarElement.offsetHeight;
     }
     if (this.bottomBarDisplayed) {
-        heightUsed += this.bottomBarHeight;
+        const bottomBarElement = this.widget.querySelector('.odm-block .odm-bottom-bar');
+        heightUsed += bottomBarElement.offsetHeight;
     }
     if (this.overlaySelectorPlace != 'body') {
         const placeEle = document.querySelector(this.overlaySelectorPlace);
-        this.maxWidth = placeEle.offsetWidth - (widthUsed * emFactor);
-        this.maxHeight = placeEle.offsetHeight - (heightUsed * emFactor);
+        this.maxWidth = placeEle.offsetWidth - widthUsed;
+        this.maxHeight = placeEle.offsetHeight - heightUsed;
     } else {
-        this.maxWidth = window.innerWidth - (widthUsed * emFactor);
-        this.maxHeight = window.innerHeight - (heightUsed * emFactor);
+        this.maxWidth = window.innerWidth - widthUsed;
+        this.maxHeight = window.innerHeight - heightUsed;
     }
-    const padding = this.elementPaddingDisplayed ? this.elementPadding * emFactor : 0;
-    if (dpEle) {
+    if (this.displayedElement && this.displayedElement.parentElement == this.elementPlace) {
         if (this.maxWidth > 0) {
-            dpEle.style.setProperty('max-width', (this.maxWidth - padding) + 'px');
+            this.displayedElement.style.setProperty('max-width', this.maxWidth + 'px');
         }
         if (this.maxHeight > 0) {
-            dpEle.style.setProperty('max-height', (this.maxHeight - padding) + 'px');
+            this.displayedElement.style.setProperty('max-height', this.maxHeight + 'px');
         }
     }
 };
@@ -548,9 +551,7 @@ OverlayDisplayManager.prototype.show = function (params) {
         this._refreshElement();
     }
     if (this.noFixed) {
-        if (this.overlaySelectorPlace != 'body') {
-            this.widget.querySelector('.odm-table').style.setProperty('margin-top', '10px');
-        } else {
+        if (this.overlaySelectorPlace == 'body') {
             const scrollY = window.scrollY !== undefined ? window.scrollY : 0;
             this.widget.querySelector('.odm-table').style.setProperty('margin-top', (scrollY + 10) + 'px');
         }
@@ -568,6 +569,7 @@ OverlayDisplayManager.prototype.show = function (params) {
             // if no focusable element is in content, try to focus any button in the top block
             obj.focusFirstDescendant(obj.widget.querySelector('.odm-block'));
         }
+        window.dispatchEvent(new Event('resize'));
     }, 300);
 };
 OverlayDisplayManager.prototype.hide = function () {
@@ -631,7 +633,7 @@ OverlayDisplayManager.prototype.previous = function () {
 };
 
 // Element display
-OverlayDisplayManager.prototype._displayElement = function (element, padding) {
+OverlayDisplayManager.prototype._displayElement = function (element) {
     const elementPlace = this.elementPlace;
     // hide previous element
     if (this.displayedElement && this.displayedElement != element) {
@@ -653,14 +655,13 @@ OverlayDisplayManager.prototype._displayElement = function (element, padding) {
         }
     }
     // show new element
-    this.elementPaddingDisplayed = Boolean(padding);
     this.displayedElement = element;
     if (element && element.parentElement != elementPlace) {
         elementPlace.appendChild(element);
     }
 };
 OverlayDisplayManager.prototype._refreshElement = function () {
-    this._displayElement(this.displayedElement, this.elementPaddingDisplayed);
+    this._displayElement(this.displayedElement);
 };
 
 // Error and loading management
@@ -780,11 +781,11 @@ OverlayDisplayManager.prototype._loadHTML = function (resource, callback) {
         }
     }
     htEle.classList.add('odm-element');
-    htEle.style.setProperty('max-width', (this.maxWidth - this.elementPadding) + 'px');
-    htEle.style.setProperty('max-height', (this.maxHeight - this.elementPadding) + 'px');
+    htEle.style.setProperty('max-width', this.maxWidth + 'px');
+    htEle.style.setProperty('max-height', this.maxHeight + 'px');
     htEle.style.setProperty('opacity', '');
     htEle.style.setProperty('position', '');
-    this._displayElement(htEle, true);
+    this._displayElement(htEle);
     if (callback) {
         callback(true);
     }
