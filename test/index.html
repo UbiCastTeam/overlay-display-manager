@@ -120,7 +120,7 @@ Sed commodo tellus nibh, eget varius ipsum malesuada eu. Etiam lobortis rhoncus 
                 odm.show(['1.jpg', '2.jpg', '3.jpg', '4.jpg']);
             });
             document.getElementById('odm_imgs404').addEventListener('click', function () {
-                odm.show(['1.jpg', '2.jpg', '404.jpg', '3.jpg', '4.jpg']);
+                odm.show([{ image: '1.jpg', title: 'First image'}, '2.jpg', '404.jpg', '3.jpg', '4.jpg']);
             });
             document.getElementById('odm_imgchange').addEventListener('click', function () {
                 odm.change('3.jpg');
