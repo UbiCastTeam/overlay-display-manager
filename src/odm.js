@@ -293,6 +293,9 @@ OverlayDisplayManager.prototype._getElementPropertyPixelValue = function (elemen
 OverlayDisplayManager.prototype.onResize = function () {
     let widthUsed = 0;
     let heightUsed = 0;
+    if (!this.widget) {
+        return;
+    }
 
     const odmBlockElement = this.widget.querySelector('.odm-block');
     const margin = this._getElementPropertyPixelValue(odmBlockElement, 'margin');
