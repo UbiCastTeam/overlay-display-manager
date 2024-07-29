@@ -68,6 +68,8 @@
             <button type="button" id="odm_imgchange">Change image</button>
             <button type="button" id="odm_img404">404 image</button>
             <button type="button" id="odm_img404title">404 image with title</button>
+            <button type="button" id="odm_text">Short text</button>
+            <button type="button" id="odm_texts">Multiple texts</button>
             <button type="button" id="odm_html">HTML content</button>
             <button type="button" id="odm_object">Object content</button>
             <button type="button" id="odm_iframe">Iframe content</button>
@@ -131,8 +133,20 @@ Sed commodo tellus nibh, eget varius ipsum malesuada eu. Etiam lobortis rhoncus 
             document.getElementById('odm_img404title').addEventListener('click', function () {
                 odm.show({ image: '404.jpg', title: '404' });
             });
+            document.getElementById('odm_text').addEventListener('click', function () {
+                const div = document.createElement('div');
+                div.textContent = 'Some short text that may be hidden by the close button.'
+                odm.show([{ html: div }]);
+            });
+            document.getElementById('odm_texts').addEventListener('click', function () {
+                const div1 = document.createElement('div');
+                div1.textContent = 'The first text of the list.'
+                const div2 = document.createElement('div');
+                div2.textContent = 'Another text to test the fade effect between texts.'
+                odm.show([{ html: div1 }, { html: div2 }]);
+            });
             document.getElementById('odm_html').addEventListener('click', function () {
-                odm.show({ title: 'feegeg', html: 'Sed efficitur ac enim at dictum. Sed hendrerit vulputate imperdiet. Quisque ultricies tortor eget felis molestie eleifend. Donec ut vulputate mauris. Nulla libero odio, condimentum ut efficitur ac, porta id lacus. Vivamus dictum tortor in ultrices vehicula. Integer sed tortor tincidunt, laoreet est eget, porta enim. Duis venenatis libero sit amet leo sodales sollicitudin.' });
+                odm.show({ title: 'Lorem ipsum', html: 'Sed efficitur ac enim at dictum. Sed hendrerit vulputate imperdiet. Quisque ultricies tortor eget felis molestie eleifend. Donec ut vulputate mauris. Nulla libero odio, condimentum ut efficitur ac, porta id lacus. Vivamus dictum tortor in ultrices vehicula. Integer sed tortor tincidunt, laoreet est eget, porta enim. Duis venenatis libero sit amet leo sodales sollicitudin.' });
             });
             document.getElementById('odm_object').addEventListener('click', function () {
                 const divEle = document.querySelector('#text_place #text_content');

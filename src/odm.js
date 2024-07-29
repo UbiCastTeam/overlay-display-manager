@@ -105,6 +105,7 @@ OverlayDisplayManager.prototype._init = function () {
                 '<div class="odm-top-bar">' +
                     '<div class="odm-resources"></div>' +
                     '<h1 id="odm_title_' + this.id + '" class="odm-title"></h1>' +
+                    '<div class="odm-clear"></div>' +
                 '</div>' +
                 '<div class="odm-element-place">' +
                     '<div class="odm-element-content"></div>' +

@@ -70,6 +70,9 @@
     z-index: 45;
     border-radius: var(--odm-block-radius);
 }
+.odm-main .odm-clear {
+    clear: both;
+}
 
 /* close button */
 .odm-main .odm-close {
@@ -105,8 +108,8 @@
     font-size: 1.5em;
 }
 .odm-main .odm-top-bar {
-    padding: 16px 24px;
-    padding-bottom: 8px;
+    padding: 20px;
+    padding-bottom: 2px;
     padding-right: 54px;
     line-height: 1.5em;
     font-size: 1.1em;
@@ -124,8 +127,8 @@
 }
 /* bottom-bar */
 .odm-main .odm-bottom-bar {
-    padding: 16px 24px;
-    padding-top: 8px;
+    padding: 20px;
+    padding-top: 2px;
     text-align: right;
     display: none;
 }
@@ -144,7 +147,7 @@
 .odm-main .odm-element-place {
     position: relative;
     overflow: hidden;
-    padding: 8px 24px;
+    padding: 20px;
 }
 .odm-main .odm-hover-loading {
     top: 20px;
