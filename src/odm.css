@@ -6,7 +6,6 @@
 .odm-main {
     --odm-block-container-color: #FBFBFB;
     --odm-block-on-container-color: #161616;
-    --odm-close-hover-color: #EEEEEE;
     --odm-block-radius: 28px;
     --odm-main-container-color: rgba(0, 0, 0, 0.7);
     --odm-main-on-container-color: #CCCCCC;
@@ -86,6 +85,8 @@
     border-radius: 100%;
     font-size: inherit;
     z-index: 1;
+    color: var(--odm-block-on-container-color);
+    background: var(--odm-block-container-color);
 }
 .odm-main .odm-close:hover {
     cursor: pointer;
