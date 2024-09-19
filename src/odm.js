@@ -284,7 +284,7 @@ OverlayDisplayManager.prototype._getElementPropertyPixelValue = function (elemen
         // get number of px of one em
         const styleProperty = window.getComputedStyle(element).getPropertyValue(name);
         if (styleProperty.indexOf('px') > 0) {
-            return parseFloat(styleProperty.replace(/[^0-9.]+/g,''));
+            return Math.floor(parseFloat(styleProperty.replace(/[^0-9.]+/g,''))) + 1;
         }
     } catch (e) {
         // ignore error and use default value
