@@ -107,6 +107,9 @@
     padding: 0;
     margin: 0;
     font-size: 1.5em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: calc(100vw - 120px);
 }
 .odm-main .odm-top-bar {
     padding: 20px;
