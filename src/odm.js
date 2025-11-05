@@ -755,6 +755,7 @@ OverlayDisplayManager.prototype._loadIframe = function (resource, callback) {
     const width = resource.width ? resource.width : this.maxWidth + 'px';
     const height = resource.height ? resource.height : this.maxHeight + 'px';
     const ifrEle = document.createElement('iframe');
+    ifrEle.setAttribute('title', resource.title);
     ifrEle.setAttribute('class', 'odm-element');
     ifrEle.setAttribute('src', resource.iframe);
     ifrEle.setAttribute('style', 'width: ' + width + '; height: ' + height + ';');
