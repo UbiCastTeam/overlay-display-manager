@@ -47,6 +47,8 @@ function OverlayDisplayManager (options) {
     this.elementFirstFocused = null;
     this.lastFocus = null;
     this.ignoreUntilFocusChanges = false;
+    // The listener has to be bound only once to be removable when the overlay is hidden
+    this.trapFocusListener = this.trapFocus.bind(this);
 
     if (window.jsu) {
         this.language = window.jsu.getCurrentLang();
@@ -173,6 +175,14 @@ OverlayDisplayManager.prototype._init = function () {
     if (this.pendingShowParams) {
         this.show(this.pendingShowParams);
     }
+};
+OverlayDisplayManager.prototype.isFocusMoved = function () {
+    /* Return true if the focus has been moved since the display of the overlay was requested.
+       The element which had the focus at that time can have been removed from the document (the
+       content displayed in the overlay for example), which gives the focus back to the body. */
+    const active = document.activeElement;
+    return Boolean(active) && active != this.elementFirstFocused &&
+        active != document.body && active != document.documentElement;
 };
 OverlayDisplayManager.prototype.trapFocus = function (event) {
     if (this.ignoreUntilFocusChanges) {
@@ -568,10 +578,15 @@ OverlayDisplayManager.prototype.show = function (params) {
     setTimeout(function () {
         // wait for transition to end
         obj.lastFocus = document.activeElement;
-        obj.widget.addEventListener('focus', obj.trapFocus.bind(obj), true);
-        if (!obj.focusFirstDescendant(obj.widget.querySelector('.odm-element-content'))) {
-            // if no focusable element is in content, try to focus any button in the top block
-            obj.focusFirstDescendant(obj.widget.querySelector('.odm-block'));
+        obj.widget.addEventListener('focus', obj.trapFocusListener, true);
+        // The focus is not moved if it has been moved since the display was requested: the user can
+        // have clicked in the content or have opened another overlay in the meantime and taking the
+        // focus would send the next keystrokes in an unexpected place
+        if (!obj.isFocusMoved()) {
+            if (!obj.focusFirstDescendant(obj.widget.querySelector('.odm-element-content'))) {
+                // if no focusable element is in content, try to focus any button in the top block
+                obj.focusFirstDescendant(obj.widget.querySelector('.odm-block'));
+            }
         }
         window.dispatchEvent(new Event('resize'));
     }, 300);
@@ -595,10 +610,13 @@ OverlayDisplayManager.prototype.hide = function () {
         }
         obj.widget.style.setProperty('display', '');
         obj._onResourceHide();
-        if (obj.elementFirstFocused) {
+        // The focus is given back to the element which had it before the display, unless it has been
+        // moved out of the overlay in the meantime (in another overlay displayed over this one for
+        // example), the hidden overlay cannot keep it
+        if (obj.elementFirstFocused && (!obj.isFocusMoved() || obj.widget.contains(document.activeElement))) {
             obj.attemptFocus(obj.elementFirstFocused);
         }
-        obj.widget.removeEventListener('focus', obj.trapFocus, true);
+        obj.widget.removeEventListener('focus', obj.trapFocusListener, true);
         obj.lastFocus = document.activeElement;
     }, 300);
 };
