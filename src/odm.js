@@ -106,7 +106,7 @@ OverlayDisplayManager.prototype._init = function () {
                     '<i aria-hidden="true">X</i></button>' +
                 '<div class="odm-top-bar">' +
                     '<div class="odm-resources"></div>' +
-                    '<h1 id="odm_title_' + this.id + '" class="odm-title"></h1>' +
+                    '<h1 id="odm_title_' + this.id + '" class="odm-title">' + this.messages.dialog + '</h1>' +
                     '<div class="odm-clear"></div>' +
                 '</div>' +
                 '<div class="odm-element-place">' +
@@ -260,6 +260,7 @@ OverlayDisplayManager.prototype.setLanguage = function (lang) {
         this.language = 'fr';
         this.messages = {
             close: 'Fermer',
+            dialog: 'Dialogue',
             loading: 'Chargement...',
             notFound: 'Image introuvable',
             unknownResource: 'Type de ressource inconnu',
@@ -270,6 +271,7 @@ OverlayDisplayManager.prototype.setLanguage = function (lang) {
         this.language = 'en';
         this.messages = {
             close: 'Close',
+            dialog: 'Dialog',
             loading: 'Loading...',
             notFound: 'Image not found',
             unknownResource: 'Unknown resource type',
@@ -284,6 +286,9 @@ OverlayDisplayManager.prototype.setLanguage = function (lang) {
         this.widget.querySelector('.odm-hover-loading div').innerHTML = this.messages.loading;
         this.widget.querySelector('.odm-previous b').innerHTML = this.messages.previous;
         this.widget.querySelector('.odm-next b').innerHTML = this.messages.next;
+        if (!this.title) {
+            this.widget.querySelector('.odm-title').textContent = this.messages.dialog;
+        }
     }
 };
 OverlayDisplayManager.prototype._getElementPropertyPixelValue = function (element, name) {
@@ -420,7 +425,8 @@ OverlayDisplayManager.prototype._checkTitleDisplay = function (title) {
         return;
     }
 
-    this.widget.querySelector('.odm-title').textContent = title;
+    // The dialog is named by its title: without a title, a generic name is given to it
+    this.widget.querySelector('.odm-title').textContent = title || this.messages.dialog;
     this.title = title;
     const shouldDisplay = title || this.resources.length > 1;
     if (shouldDisplay && !this.topBarDisplayed) {
